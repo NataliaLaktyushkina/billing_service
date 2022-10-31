@@ -1,3 +1,3 @@
 # Проектная работа: диплом
 
-[Репозиторий дипломная работа](https://github.com/NataliaLaktyushkina/graduate_work)
+[Репозиторий c дипломной работой](https://github.com/NataliaLaktyushkina/graduate_work)
