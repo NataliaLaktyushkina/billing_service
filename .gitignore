@@ -1,0 +1,4 @@
+.env
+notes.md
+/docker-compose.override.yml
+postgresql/data
