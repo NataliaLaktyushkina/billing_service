@@ -2,6 +2,13 @@
 
 [Репозиторий c дипломной работой](https://github.com/NataliaLaktyushkina/graduate_work)
 
+## Запуск проекта
+`docker compose up`
+
+**Переменные окружения:**
+- [postgresql](docker/postgres/.env.example)
+- [saver](saver/app/core/.env.example)
+
 **Processing:**
 
 *http://127.0.0.1:5001/execute_transaction*
