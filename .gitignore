@@ -2,3 +2,5 @@
 notes.md
 /docker-compose.override.yml
 postgresql/data
+flake-report
+.mypy_cache
