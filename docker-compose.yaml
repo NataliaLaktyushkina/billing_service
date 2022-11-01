@@ -10,6 +10,13 @@ services:
     volumes:
       - ./postgresql/data:/var/lib/postgresql/data
 
+  processing:
+    container_name: processing
+    build:
+      context: .
+      dockerfile: docker/processing/Dockerfile
+
+
 networks:
    default:
      name: billing_network
