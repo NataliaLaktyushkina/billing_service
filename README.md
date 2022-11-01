@@ -8,3 +8,16 @@
 
 [Имитирует](processing/main.py) обращение к внешнему сервису процессинга.
 Возвращает ответ - выполнена ли транзакция (success) или нет (error)
+
+
+**Kafka:**
+
+List of topics inside a container:
+
+`kafka-topics --bootstrap-server broker:9092 --list`
+
+Send message to topic:
+
+`kafka-console-producer --bootstrap-server broker:9092 --topic payments`
+
+Ctrl-D - exit
