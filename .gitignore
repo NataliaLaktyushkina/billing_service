@@ -4,3 +4,4 @@ notes.md
 postgresql/data
 flake-report
 .mypy_cache
+.github
