@@ -19,15 +19,20 @@ class SubscriptionId(str, Enum):
     year = 'year'
 
 
+class PaymentType(str, Enum):
+    payment = 'payment'
+    cancellation = 'cancellation'
+
+
 class Payment(BaseOrjsonModel):
     """
       This is the description of payment model .
     """
-    payment_id: SubscriptionId  # id of supscription
+    payment_id: SubscriptionId
     topic = settings.TOPIC_PAYMENT
-    sum: int
     status: PaymentStatus
     payment_date: datetime
+    payment_type: PaymentType
 
 
 class PaymentAccepted(BaseOrjsonModel):
