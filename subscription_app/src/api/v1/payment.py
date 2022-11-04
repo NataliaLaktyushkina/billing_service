@@ -22,8 +22,6 @@ async def proceed_payment(
 ) -> PaymentAccepted:
     payment = Payment(payment_id=subscription_type,
                       topic=settings.TOPIC_PAYMENT,
-                      sum=payment_sum,
                       status=PaymentStatus.new,
-                      payment_date=datetime.now(),
                       payment_type=payment_type)
     return await service.send_payment(payment, user_id)

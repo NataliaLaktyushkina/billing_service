@@ -4,7 +4,7 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-COPY saver/requirements.txt .
+COPY docker/saver/requirements.txt .
 
 RUN apt update && apt install -y netcat && which nc
 

@@ -4,7 +4,7 @@ from functools import wraps
 
 import aiokafka
 
-from core.config import settings
+from core.config_saver import settings
 
 
 def backoff(start_sleep_time: float = 0.1,  # type: ignore

@@ -16,6 +16,11 @@
 - [postgresql](docker/postgres/.env.example)
 - [saver](saver/app/core/.env.example)
 
+**Saver**:
+
+Считывает платежи из очереди. 
+Складывает все платежи в БД (без разбора) со статусом New.
+
 **Processing:**
 
 *http://127.0.0.1:5001/execute_transaction*

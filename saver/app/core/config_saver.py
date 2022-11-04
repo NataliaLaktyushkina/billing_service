@@ -16,13 +16,29 @@ class KafkaPromSettings(BaseModel):
 
 
 class KafkaDevSettings(BaseModel):
-    KAFKA_HOST: Optional[str]  = os.getenv('KAFKA_HOST_DEBUG')
-    KAFKA_PORT: Optional[str]  = os.getenv('KAFKA_PORT_DEBUG')
+    KAFKA_HOST: Optional[str] = os.getenv('KAFKA_HOST_DEBUG')
+    KAFKA_PORT: Optional[str] = os.getenv('KAFKA_PORT_DEBUG')
+
+
+class PostgresqlUser(BaseModel):
+    POSTGRES_USER: Optional[str] = os.getenv('POSTGRES_USER')
+    POSTGRES_PASSWORD: Optional[str] = os.getenv('POSTGRES_PASSWORD')
+    POSTGRES_DB: Optional[str] = os.getenv('POSTGRES_DB')
+    POSTGRES_PORT: Optional[str] = os.getenv('POSTGRES_PORT')
+
+
+class PostgresqlPromSettings(PostgresqlUser):
+    POSTGRES_HOST: Optional[str] = os.getenv('POSTGRES_HOST')
+
+
+class PostgresqlDevSettings(PostgresqlUser):
+    POSTGRES_HOST: Optional[str] = os.getenv('POSTGRES_HOST_DEBUG')
 
 
 class Settings(BaseSettings):
 
-    TOPIC: Optional[str]  = os.getenv('TOPIC')
+    TOPIC: Optional[str] = os.getenv('TOPIC')
+    BATCH_SIZE: int
 
     class Config:
         env_file = '.env'
@@ -31,10 +47,12 @@ class Settings(BaseSettings):
 
 class PromSettings(Settings):
     kafka_settings: KafkaPromSettings = KafkaPromSettings()
+    postgres_settings: PostgresqlPromSettings = PostgresqlPromSettings()
 
 
 class DevSettings(Settings):
     kafka_settings: KafkaDevSettings = KafkaDevSettings()
+    postgres_settings: PostgresqlDevSettings = PostgresqlDevSettings()
 
 
 def get_settings() -> Union[PromSettings, DevSettings]:
