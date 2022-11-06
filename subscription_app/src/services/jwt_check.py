@@ -19,7 +19,7 @@ class JWTBearer(HTTPBearer):
                 raise HTTPException(status_code=http.HTTPStatus.FORBIDDEN, detail='Invalid authentication scheme.')
             if not self.verify_jwt(jwt_token=credentials.credentials):
                 raise HTTPException(status_code=http.HTTPStatus.FORBIDDEN, detail='Invalid token or expired token.')
-            return jwt_decoder(token=credentials.credentials).get("user_id")
+            return jwt_decoder(token=credentials.credentials).get('user_id')
 
         raise HTTPException(status_code=http.HTTPStatus.FORBIDDEN, detail='Invalid authorization code.')
 
@@ -29,6 +29,6 @@ class JWTBearer(HTTPBearer):
             payload: Optional[dict] = jwt_decoder(jwt_token)
             expire_time: Optional[int] = payload.get('exp')
             current_time: int = int(datetime.now().timestamp())
-        except:
+        except:  # noqa: B001
             return False
         return expire_time > current_time

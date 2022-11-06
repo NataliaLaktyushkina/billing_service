@@ -7,43 +7,14 @@ from sqlalchemy import Column, String, Date, DateTime
 from sqlalchemy import or_
 from sqlalchemy.dialects.postgresql import UUID
 
-from database.db import Base
-
-
-def create_partition_for_users(target, connection, **kw) -> None:
-    """Create users partition by date of birth."""
-    connection.execute(
-        """
-        CREATE TABLE IF NOT EXISTS "users_birthdays_1920_to_1979"
-        PARTITION OF "users"
-        FOR VALUES FROM ('1920-01-01') TO ('1979-12-31');
-        """
-    )
-    connection.execute(
-        """
-        CREATE TABLE IF NOT EXISTS "users_birthdays_1980_to_2003"
-        PARTITION OF "users"
-        FOR VALUES FROM ('1980-01-01') TO ('2003-12-31');
-        """
-    )
-    connection.execute(
-        """
-        CREATE TABLE IF NOT EXISTS "users_birthdays_2004_to_2022"
-        PARTITION OF "users"
-        FOR VALUES FROM ('2004-01-01') TO ('2022-12-31');
-        """
-    )
+from postgresql.db_settings.db import Base
 
 
 class User(Base):
     """Model to represent user data """
     __tablename__ = 'users'
     __table_args__ = (
-        UniqueConstraint("id", "email", "date_of_birth"),
-        {
-            "postgresql_partition_by": "RANGE (date_of_birth)",
-            "listeners": [("after_create", create_partition_for_users)],
-        },
+        UniqueConstraint('id', 'email', 'date_of_birth'),
     )
 
     id = Column(UUID(as_uuid=True), primary_key=True,
@@ -63,6 +34,14 @@ class User(Base):
         return cls.query.filter(or_(cls.login == login, cls.email == email)).first()
 
 
+class SubscriptionTypes(Base):
+    """Model to represent roles"""
+    __tablename__ = 'subscription_types'
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+    name = Column(String, unique=True, nullable=False)
+
+
 class PaymentsNew(Base):
     """Model to represent history of payments"""
     __tablename__ = 'payments_new'
@@ -70,7 +49,7 @@ class PaymentsNew(Base):
     id = Column(UUID(as_uuid=True), primary_key=True,
                 default=uuid.uuid4, unique=True, nullable=False)
     user_id = Column(UUID(as_uuid=True), ForeignKey(User.id))
-    payment_id = Column(UUID(as_uuid=True))
+    subscription_type = Column(String, ForeignKey(SubscriptionTypes.name), nullable=False)
     payment_date = Column(DateTime, default=datetime.utcnow(), nullable=False)
     payment_type = Column(String, nullable=False)
 

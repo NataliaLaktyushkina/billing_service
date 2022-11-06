@@ -1,8 +1,8 @@
 from enum import Enum
 
-from .json_config import BaseOrjsonModel
-from datetime import datetime
 from core.config import settings
+
+from .json_config import BaseOrjsonModel
 
 
 class PaymentStatus(str, Enum):
@@ -31,7 +31,6 @@ class Payment(BaseOrjsonModel):
     payment_id: SubscriptionId
     topic = settings.TOPIC_PAYMENT
     status: PaymentStatus
-    payment_date: datetime
     payment_type: PaymentType
 
 
@@ -40,4 +39,3 @@ class PaymentAccepted(BaseOrjsonModel):
       This is the description of payment model .
     """
     accepted: bool
-

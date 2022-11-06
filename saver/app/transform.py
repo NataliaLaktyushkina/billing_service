@@ -3,7 +3,7 @@ import ast
 from datetime import datetime
 from typing import List
 
-from database.db_service import add_payment
+from postgresql.db_settings.db_service import add_payment
 
 
 async def transform_data(kafka_data: List[dict]):
@@ -11,9 +11,9 @@ async def transform_data(kafka_data: List[dict]):
     for msg in kafka_data:
 
         data = {}
-        user_id, payment_id = msg['key'].decode('utf-8').split(':')
+        user_id, subscription_type = msg['key'].decode('utf-8').split(':')
         data['user_id'] = uuid.UUID(user_id)
-        data['payment_id'] = payment_id
+        data['subscription_type'] = subscription_type
         value = msg['value'].decode('utf-8')
         value_dict = ast.literal_eval(value)
         data['payment_type'] = value_dict['payment_type']

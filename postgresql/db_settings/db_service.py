@@ -7,6 +7,8 @@ from werkzeug.security import generate_password_hash
 from postgresql.db_settings.db import SessionLocal
 from postgresql.db_settings.db_models import User, PaymentsNew
 
+from sqlalchemy.exc import IntegrityError
+
 
 def get_user_by_login(login: str) -> User:
     user = User.query.filter_by(login=login).first()
@@ -40,10 +42,13 @@ async def add_payment(payment_data: List[dict]):
     for payment in payment_data:
         new_payment = PaymentsNew(
                     user_id=payment['user_id'],
-                    payment_id=payment['payment_id'],
+                    subscription_type=payment['subscription_type'],
                     payment_date=payment['payment_date'],
                     payment_type=payment['payment_type'],
     )
 
         service.add(new_payment)
-    await service.commit()
+    try:
+        await service.commit()
+    except IntegrityError:
+        raise Exception('Could not add payment')
