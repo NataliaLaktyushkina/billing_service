@@ -69,6 +69,6 @@ _log_handler = logging.StreamHandler()
 _log_handler.setLevel(logging.DEBUG)
 _log_handler.setFormatter(_formatter)
 
-logger = logging.getLogger('etl')
+logger = logging.getLogger('saver')
 logger.addHandler(_log_handler)
 logger.setLevel(logging.DEBUG)

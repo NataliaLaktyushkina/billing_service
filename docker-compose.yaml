@@ -10,17 +10,29 @@ services:
     volumes:
       - ./postgresql/data:/var/lib/postgresql/data
 
+  subscription_app:
+    container_name: subscription_app
+    build:
+      context: .
+      dockerfile: docker/subscription_app/Dockerfile
+    depends_on:
+      - broker
+
   saver:
     container_name: saver
     build:
       context: .
       dockerfile: docker/saver/Dockerfile
+    depends_on:
+      - broker
+
 
   processing:
     container_name: processing
     build:
       context: .
       dockerfile: docker/processing/Dockerfile
+
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.0.1

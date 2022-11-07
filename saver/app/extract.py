@@ -1,5 +1,6 @@
-from utils.connection import connect_to_consumer
 from core.logger import logger
+from transform import transform_data
+from utils.connection import connect_to_consumer
 
 
 async def extract_data() -> None:
@@ -13,5 +14,6 @@ async def extract_data() -> None:
                     'value': msg.value,
                     'timestamp': msg.timestamp}
             logger.info(msg=data)
+            await transform_data(kafka_data=[data])
     finally:
         await consumer.stop()
