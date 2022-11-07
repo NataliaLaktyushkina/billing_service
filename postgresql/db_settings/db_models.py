@@ -65,3 +65,18 @@ class PaymentsNew(Base):
 
     def __repr__(self):
         return f'<Payments {self.user_id}:{self.payment_type}>'
+
+
+class Payments(Base):
+    """Model to represent payments to process"""
+    __tablename__ = 'payments'
+
+    id = Column(UUID(as_uuid=True), primary_key=True,
+                default=uuid.uuid4, unique=True, nullable=False)
+    user_id = Column(UUID(as_uuid=True), ForeignKey(User.id))
+    subscription_type = Column(String, ForeignKey(SubscriptionTypes.name), nullable=False)
+    payment_date = Column(DateTime, default=datetime.utcnow(), nullable=False)
+    payment_type = Column(String, nullable=False)
+
+    def __repr__(self):
+        return f'<Payments {self.user_id}:{self.payment_type}>'
