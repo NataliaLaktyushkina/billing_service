@@ -64,7 +64,7 @@ class PaymentsNew(Base):
     payment_type = Column(String, nullable=False)
 
     def __repr__(self):
-        return f'<Payments {self.user_id}:{self.payment_type}>'
+        return f'<Payments new {self.user_id}:{self.payment_type}>'
 
 
 class Payments(Base):

@@ -8,6 +8,7 @@ from postgresql.db_settings.db import SessionLocal
 from postgresql.db_settings.db_models import User, PaymentsNew
 
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.future import select
 
 
 def get_user_by_login(login: str) -> User:
@@ -52,3 +53,9 @@ async def add_payment(payment_data: List[dict]):
         await service.commit()
     except IntegrityError:
         raise Exception('Could not add payment')
+
+
+async def extract_new_payments() -> List[PaymentsNew]:
+    async with SessionLocal() as session:
+        result = await session.execute(select(PaymentsNew))
+        return result.scalars().all()
