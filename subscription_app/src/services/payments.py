@@ -14,6 +14,6 @@ class PaymentHandler:
 
 
 def get_payment_handler(
-        payment_storage: AbstractPaymentStorage = Depends(get_kafka)
+        payment_storage: AbstractPaymentStorage = Depends(get_kafka),
 ) -> PaymentHandler:
     return PaymentHandler(KafkaStorage(payment_storage))

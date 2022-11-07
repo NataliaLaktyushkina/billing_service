@@ -34,7 +34,7 @@ class KafkaStorage(AbstractPaymentStorage):
                                               key=':'.join((user_id, payment.payment_id)).encode())
 
             payment_was_sent = True
-        except KafkaError as error:
+        except KafkaError:
             payment_was_sent = False
         finally:
             # Wait for all pending messages to be delivered or expire.
