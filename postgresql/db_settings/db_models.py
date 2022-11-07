@@ -3,7 +3,7 @@ import uuid
 from typing import Optional
 
 from sqlalchemy import ForeignKey, UniqueConstraint
-from sqlalchemy import Column, String, Date, DateTime
+from sqlalchemy import Column, String, Date, DateTime, Float
 from sqlalchemy import or_
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -40,6 +40,16 @@ class SubscriptionTypes(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     name = Column(String, unique=True, nullable=False)
+
+
+class SubscriptionCost(Base):
+    """Model to represent roles"""
+    __tablename__ = 'subscription_cost'
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+    subscription_type = Column(String, ForeignKey(SubscriptionTypes.name), nullable=False)
+    cost = Column(Float(precision=2), nullable=False)
+    creation_date = Column(Date, default=datetime.utcnow(), nullable=False)
 
 
 class PaymentsNew(Base):

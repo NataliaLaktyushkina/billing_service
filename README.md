@@ -28,6 +28,14 @@
 **Переменные окружения:**
 - [postgresql](docker/postgres/.env.example)
 - [saver](saver/app/core/.env.example)
+- [subscription_app](subscription_app/src/core/.env.example)
+
+**Subscription app**:
+
+API - позволяет оплатить подписку либо вернуть стоимость
+
+*http://127.0.0.1:8101/api/openapi*
+
 
 **Saver**:
 
