@@ -25,7 +25,15 @@ services:
       dockerfile: docker/saver/Dockerfile
     depends_on:
       - broker
+      - postgres
 
+  worker:
+    container_name: worker
+    build:
+      context: .
+      dockerfile: docker/worker/Dockerfile
+    depends_on:
+      - postgres
 
   processing:
     container_name: processing

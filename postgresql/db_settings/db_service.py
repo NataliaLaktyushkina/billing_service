@@ -2,12 +2,12 @@ import secrets
 import string
 from typing import List, Optional
 
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.future import select
 from werkzeug.security import generate_password_hash
 
 from postgresql.db_settings.db import SessionLocal
-from postgresql.db_settings.db_models import User, PaymentsNew
-
-from sqlalchemy.exc import IntegrityError
+from postgresql.db_settings.db_models import User, PaymentsNew, Payments, PaymentsStatus
 
 
 def get_user_by_login(login: str) -> User:
@@ -23,7 +23,7 @@ def generate_password():
     return password
 
 
-def create_user(username, email, password:Optional[str] = None):
+def create_user(username, email, password: Optional[str] = None):
     if password is None:
         password = generate_password()
     hashed_password = generate_password_hash(password, method='sha256')
@@ -52,3 +52,30 @@ async def add_payment(payment_data: List[dict]):
         await service.commit()
     except IntegrityError:
         raise Exception('Could not add payment')
+
+
+async def extract_new_payments() -> List[PaymentsNew]:
+    async with SessionLocal() as session:
+        result = await session.execute(select(PaymentsNew))
+        return result.scalars().all()
+
+
+async def load_data_to_payments(new_payments: List[PaymentsNew]) -> None:
+    async with SessionLocal() as session:
+        for new_payment in new_payments:
+            payment = Payments(
+                user_id=new_payment.user_id,
+                subscription_type=new_payment.subscription_type,
+                status=PaymentsStatus.in_processing,
+                payment_date=new_payment.payment_date,
+                payment_type=new_payment.payment_type,
+    )
+            session.add(payment)
+        await session.commit()
+
+
+async def delete_new_payments(new_payments: List[PaymentsNew]) -> None:
+    async with SessionLocal() as session:
+        for new_payment in new_payments:
+            await session.delete(new_payment)
+        await session.commit()

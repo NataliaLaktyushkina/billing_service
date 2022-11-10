@@ -17,6 +17,7 @@ host_port = ':'.join((host, port))
 database_name = db_settings.POSTGRES_DB
 
 SQLALCHEMY_DATABASE_URI = f'postgresql+asyncpg://{username}:{password}@{host_port}/{database_name}'
+ALEMBIC_SQLALCHEMY_DATABASE_URI = f'postgresql://{username}:{password}@{host_port}/{database_name}'
 
 
 logger = logging.getLogger(__name__)

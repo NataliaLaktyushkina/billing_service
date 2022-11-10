@@ -6,7 +6,6 @@ import aiokafka
 
 from core.config_saver import settings
 
-
 def backoff(start_sleep_time: float = 0.1,  # type: ignore
             factor: int = 2, border_sleep_time: int = 10):
     """
