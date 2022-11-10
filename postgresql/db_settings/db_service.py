@@ -7,7 +7,7 @@ from sqlalchemy.future import select
 from werkzeug.security import generate_password_hash
 
 from postgresql.db_settings.db import SessionLocal
-from postgresql.db_settings.db_models import User, PaymentsNew, Payments
+from postgresql.db_settings.db_models import User, PaymentsNew, Payments, PaymentsStatus
 
 
 def get_user_by_login(login: str) -> User:
@@ -66,6 +66,7 @@ async def load_data_to_payments(new_payments: List[PaymentsNew]) -> None:
             payment = Payments(
                 user_id=new_payment.user_id,
                 subscription_type=new_payment.subscription_type,
+                status=PaymentsStatus.in_processing,
                 payment_date=new_payment.payment_date,
                 payment_type=new_payment.payment_type,
     )
