@@ -2,13 +2,12 @@ import secrets
 import string
 from typing import List, Optional
 
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.future import select
 from werkzeug.security import generate_password_hash
 
 from postgresql.db_settings.db import SessionLocal
 from postgresql.db_settings.db_models import User, PaymentsNew, Payments
-
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.future import select
 
 
 def get_user_by_login(login: str) -> User:
