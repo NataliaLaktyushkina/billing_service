@@ -35,6 +35,19 @@ class User(Base):
         return cls.query.filter(or_(cls.login == login, cls.email == email)).first()
 
 
+class PaymentsStatus(enum.Enum):
+    new = 'new'
+    in_processing = 'in processing'
+    processed = 'processed'
+    completed = 'completed'
+    error = 'error'
+
+
+class PaymentsTypes(enum.Enum):
+    payment = 'payment'
+    refund = 'refund'
+
+
 class SubscriptionTypes(str, enum.Enum):
     month = 'month'
     three_months = 'three_months'
@@ -60,23 +73,10 @@ class PaymentsNew(Base):
     user_id = Column(UUID(as_uuid=True), ForeignKey(User.id))
     subscription_type = Column(Enum(SubscriptionTypes), nullable=False)
     payment_date = Column(DateTime, default=datetime.utcnow(), nullable=False)
-    payment_type = Column(String, nullable=False)
+    payment_type = Column(Enum(PaymentsTypes), nullable=False)
 
     def __repr__(self):
         return f'<Payments new {self.user_id}:{self.payment_type}>'
-
-
-class PaymentsStatus(enum.Enum):
-    new = 'new'
-    in_processing = 'in processing'
-    processed = 'processed'
-    completed = 'completed'
-    error = 'error'
-
-
-class PaymentsTypes(enum.Enum):
-    payment = 'payment'
-    refund = 'refund'
 
 
 class Payments(Base):
