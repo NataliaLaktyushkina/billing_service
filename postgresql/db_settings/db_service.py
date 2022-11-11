@@ -61,6 +61,12 @@ async def extract_new_payments() -> List[PaymentsNew]:
         return result.scalars().all()
 
 
+async def upload_payments(status: PaymentsStatus) -> List[Payments]:
+    async with SessionLocal() as session:
+        result = await session.execute(select(Payments).where(Payments.status == status))
+        return result.scalars().all()
+
+
 async def load_data_to_payments(new_payments: List[PaymentsNew]) -> None:
     async with SessionLocal() as session:
         for new_payment in new_payments:
