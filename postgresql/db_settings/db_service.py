@@ -8,6 +8,7 @@ from werkzeug.security import generate_password_hash
 
 from postgresql.db_settings.db import SessionLocal
 from postgresql.db_settings.db_models import User, PaymentsNew, Payments, PaymentsStatus
+from postgresql.db_settings.logger import logger
 
 
 def get_user_by_login(login: str) -> User:
@@ -51,7 +52,7 @@ async def add_payment(payment_data: List[dict]):
     try:
         await service.commit()
     except IntegrityError:
-        raise Exception('Could not add payment')
+        logger.error(msg='Could not add payment')
 
 
 async def extract_new_payments() -> List[PaymentsNew]:
