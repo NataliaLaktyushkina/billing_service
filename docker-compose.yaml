@@ -1,6 +1,15 @@
 version: '3.9'
 
 services:
+  nginx:
+    container_name: nginx
+    build:
+      context: ./nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - subscription_app
+
   postgres:
     container_name: postgres
     image: postgres:15.0
@@ -10,13 +19,11 @@ services:
     volumes:
       - ./postgresql/data:/var/lib/postgresql/data
 
-  subscription_app:
-    container_name: subscription_app
+  processing:
+    container_name: processing
     build:
       context: .
-      dockerfile: docker/subscription_app/Dockerfile
-    depends_on:
-      - broker
+      dockerfile: docker/processing/Dockerfile
 
   saver:
     container_name: saver
@@ -27,6 +34,14 @@ services:
       - broker
       - postgres
 
+  subscription_app:
+    container_name: subscription_app
+    build:
+      context: .
+      dockerfile: docker/subscription_app/Dockerfile
+    depends_on:
+      - broker
+
   worker:
     container_name: worker
     build:
@@ -34,12 +49,6 @@ services:
       dockerfile: docker/worker/Dockerfile
     depends_on:
       - postgres
-
-  processing:
-    container_name: processing
-    build:
-      context: .
-      dockerfile: docker/processing/Dockerfile
 
 
   zookeeper:
