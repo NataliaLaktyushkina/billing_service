@@ -37,6 +37,7 @@ class User(Base):
 
 class PaymentsStatus(enum.Enum):
     new = 'new'
+    to_process = 'to_process'
     in_processing = 'in processing'
     processed = 'processed'
     completed = 'completed'

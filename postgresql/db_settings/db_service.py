@@ -67,7 +67,7 @@ async def load_data_to_payments(new_payments: List[PaymentsNew]) -> None:
             payment = Payments(
                 user_id=new_payment.user_id,
                 subscription_type=new_payment.subscription_type,
-                status=PaymentsStatus.in_processing,
+                status=PaymentsStatus.to_process,
                 payment_date=new_payment.payment_date,
                 payment_type=new_payment.payment_type,
     )
