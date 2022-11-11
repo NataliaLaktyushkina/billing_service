@@ -17,7 +17,6 @@ def get_user_by_login(login: str) -> User:
 
 
 def generate_password():
-
     alphabet = string.ascii_letters + string.digits
     password = ''.join(secrets.choice(alphabet) for i in range(8))
 
@@ -42,11 +41,11 @@ async def add_payment(payment_data: List[dict]):
     service = SessionLocal()
     for payment in payment_data:
         new_payment = PaymentsNew(
-                    user_id=payment['user_id'],
-                    subscription_type=payment['subscription_type'],
-                    payment_date=payment['payment_date'],
-                    payment_type=payment['payment_type'],
-    )
+            user_id=payment['user_id'],
+            subscription_type=payment['subscription_type'],
+            payment_date=payment['payment_date'],
+            payment_type=payment['payment_type'],
+        )
 
         service.add(new_payment)
     try:
@@ -63,8 +62,20 @@ async def extract_new_payments() -> List[PaymentsNew]:
 
 async def upload_payments(status: PaymentsStatus) -> List[Payments]:
     async with SessionLocal() as session:
-        result = await session.execute(select(Payments).where(Payments.status == status))
+        result = await session.execute(select(Payments).filter(Payments.status == status))
         return result.scalars().all()
+
+
+async def change_payment_status(
+        payment: Payments, status: PaymentsStatus,
+) -> None:
+    async with SessionLocal() as session:
+        result = await session.execute(
+            select(Payments).filter(Payments.id == payment.id),
+        )
+        db_payment = result.scalars().first()
+        db_payment.status = status
+        await session.commit()
 
 
 async def load_data_to_payments(new_payments: List[PaymentsNew]) -> None:
@@ -76,7 +87,7 @@ async def load_data_to_payments(new_payments: List[PaymentsNew]) -> None:
                 status=PaymentsStatus.to_process,
                 payment_date=new_payment.payment_date,
                 payment_type=new_payment.payment_type,
-    )
+            )
             session.add(payment)
         await session.commit()
 
