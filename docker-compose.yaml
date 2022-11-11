@@ -25,6 +25,14 @@ services:
       context: .
       dockerfile: docker/processing/Dockerfile
 
+  processor:
+    container_name: processor
+    build:
+      context: .
+      dockerfile: docker/processor/Dockerfile
+    depends_on:
+      - postgres
+
   saver:
     container_name: saver
     build:
