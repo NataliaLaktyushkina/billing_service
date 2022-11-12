@@ -35,13 +35,17 @@ class User(Base):
         return cls.query.filter(or_(cls.login == login, cls.email == email)).first()
 
 
-class PaymentsStatus(enum.Enum):
+class ProcessingStatus(enum.Enum):
     new = 'new'
-    to_process = 'to_process'
     in_processing = 'in processing'
     processed = 'processed'
     completed = 'completed'
+
+
+class PaymentStatus(enum.Enum):
+    accepted = 'accepted'
     error = 'error'
+    rejected = 'rejected'
 
 
 class PaymentsTypes(enum.Enum):
@@ -65,21 +69,6 @@ class SubscriptionCost(Base):
     creation_date = Column(Date, default=datetime.utcnow(), nullable=False)
 
 
-class PaymentsNew(Base):
-    """Model to represent history of payments"""
-    __tablename__ = 'payments_new'
-
-    id = Column(UUID(as_uuid=True), primary_key=True,
-                default=uuid.uuid4, unique=True, nullable=False)
-    user_id = Column(UUID(as_uuid=True), ForeignKey(User.id))
-    subscription_type = Column(Enum(SubscriptionTypes), nullable=False)
-    payment_date = Column(DateTime, default=datetime.utcnow(), nullable=False)
-    payment_type = Column(Enum(PaymentsTypes), nullable=False)
-
-    def __repr__(self):
-        return f'<Payments new {self.user_id}:{self.payment_type}>'
-
-
 class Payments(Base):
     """Model to represent payments to process"""
     __tablename__ = 'payments'
@@ -88,7 +77,8 @@ class Payments(Base):
                 default=uuid.uuid4, unique=True, nullable=False)
     user_id = Column(UUID(as_uuid=True), ForeignKey(User.id))
     subscription_type = Column(Enum(SubscriptionTypes), nullable=False)
-    status = Column(Enum(PaymentsStatus))
+    processing_status = Column(Enum(ProcessingStatus))
+    payment_status = Column(Enum(PaymentStatus))
     payment_date = Column(DateTime, default=datetime.utcnow(), nullable=False)
     payment_type = Column(Enum(PaymentsTypes), nullable=False)
 

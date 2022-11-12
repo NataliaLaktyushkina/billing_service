@@ -7,7 +7,7 @@ from sqlalchemy.future import select
 from werkzeug.security import generate_password_hash
 
 from postgresql.db_settings.db import SessionLocal
-from postgresql.db_settings.db_models import User, PaymentsNew, Payments, PaymentsStatus
+from postgresql.db_settings.db_models import User, Payments, ProcessingStatus
 from postgresql.db_settings.logger import logger
 
 
@@ -40,13 +40,13 @@ def create_user(username, email, password: Optional[str] = None):
 async def add_payment(payment_data: List[dict]):
     service = SessionLocal()
     for payment in payment_data:
-        new_payment = PaymentsNew(
+        new_payment = Payments(
             user_id=payment['user_id'],
             subscription_type=payment['subscription_type'],
+            processing_status=ProcessingStatus.new,
             payment_date=payment['payment_date'],
             payment_type=payment['payment_type'],
         )
-
         service.add(new_payment)
     try:
         await service.commit()
@@ -54,46 +54,29 @@ async def add_payment(payment_data: List[dict]):
         logger.error(msg='Could not add payment')
 
 
-async def extract_new_payments() -> List[PaymentsNew]:
+async def extract_new_payments() -> List[Payments]:
     async with SessionLocal() as session:
-        result = await session.execute(select(PaymentsNew))
+        result = await session.execute(
+            select(Payments).filter(
+                Payments.processing_status == ProcessingStatus.new,
+            ),
+        )
         return result.scalars().all()
 
 
-async def upload_payments(status: PaymentsStatus) -> List[Payments]:
+async def upload_payments(processing_status: ProcessingStatus) -> List[Payments]:
     async with SessionLocal() as session:
-        result = await session.execute(select(Payments).filter(Payments.status == status))
+        result = await session.execute(select(Payments).filter(Payments.processing_status == processing_status))
         return result.scalars().all()
 
 
-async def change_payment_status(
-        payment: Payments, status: PaymentsStatus,
+async def change_processing_status(
+        payment: Payments, processing_status: ProcessingStatus,
 ) -> None:
     async with SessionLocal() as session:
         result = await session.execute(
             select(Payments).filter(Payments.id == payment.id),
         )
         db_payment = result.scalars().first()
-        db_payment.status = status
-        await session.commit()
-
-
-async def load_data_to_payments(new_payments: List[PaymentsNew]) -> None:
-    async with SessionLocal() as session:
-        for new_payment in new_payments:
-            payment = Payments(
-                user_id=new_payment.user_id,
-                subscription_type=new_payment.subscription_type,
-                status=PaymentsStatus.to_process,
-                payment_date=new_payment.payment_date,
-                payment_type=new_payment.payment_type,
-            )
-            session.add(payment)
-        await session.commit()
-
-
-async def delete_new_payments(new_payments: List[PaymentsNew]) -> None:
-    async with SessionLocal() as session:
-        for new_payment in new_payments:
-            await session.delete(new_payment)
+        db_payment.status = processing_status
         await session.commit()

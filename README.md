@@ -17,13 +17,16 @@
 
 `alembic upgrade head`
 
-**Статусы платежей:**
+**Processing statuses:**
 - new - платеж создан/отправлен (subscription_app)
-- to process - платеж принят (убрали дубли) (worker)
 - in_processing - платеж в обработке, отправлен в процессинг (processor)
 - processed - платеж обработан (произошло движение по счетам) (processing)
-- completed -  отправлено уведомление пользователю (notificator)
-- error  - Ошибка обработки платежа на каком либо из этапов
+- completed -  отправлено уведомление пользователю (notification app)
+
+**Payment statuses:**
+- accepted
+- error
+- decline
 
 
 **Переменные окружения:**
