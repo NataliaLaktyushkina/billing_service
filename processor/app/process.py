@@ -6,15 +6,15 @@ import requests
 from core.config import settings
 from core.logger import logger
 from postgresql.db_settings.db_models import Payments
-from postgresql.db_settings.db_models import PaymentsStatus
-from postgresql.db_settings.db_service import change_payment_status
+from postgresql.db_settings.db_models import ProcessingStatus, PaymentStatus
+from postgresql.db_settings.db_service import update_statuses
 
 
 async def process_payments(payments: List[Payments]):
     for payment in payments:
-        await change_payment_status(
+        await update_statuses(
             payment=payment,
-            status=PaymentsStatus.in_processing,
+            processing_status=ProcessingStatus.in_processing,
         )
         await send_to_processing(payment=payment)
 
@@ -24,9 +24,13 @@ async def send_to_processing(payment: Payments):
         f'{settings.PROCESSOR}/execute_transaction',
     )
     logger.info(response.content)
+    new_processing_status = ProcessingStatus.processed
     if response.status_code == HTTPStatus.OK:
-        new_status = PaymentsStatus.processed
+        payment_status = PaymentStatus.accepted
     else:
-        new_status = PaymentsStatus.error
-    await change_payment_status(payment=payment,
-                                status=new_status)
+        payment_status = PaymentStatus.error
+    await update_statuses(
+        payment=payment,
+        processing_status=new_processing_status,
+        payment_status=payment_status,
+    )

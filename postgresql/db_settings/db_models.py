@@ -46,6 +46,7 @@ class PaymentStatus(enum.Enum):
     accepted = 'accepted'
     error = 'error'
     rejected = 'rejected'
+    unknown = 'unknown'
 
 
 class PaymentsTypes(enum.Enum):

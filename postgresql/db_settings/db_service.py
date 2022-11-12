@@ -7,7 +7,7 @@ from sqlalchemy.future import select
 from werkzeug.security import generate_password_hash
 
 from postgresql.db_settings.db import SessionLocal
-from postgresql.db_settings.db_models import User, Payments, ProcessingStatus
+from postgresql.db_settings.db_models import User, Payments, ProcessingStatus, PaymentStatus
 from postgresql.db_settings.logger import logger
 
 
@@ -64,19 +64,25 @@ async def extract_new_payments() -> List[Payments]:
         return result.scalars().all()
 
 
-async def upload_payments(processing_status: ProcessingStatus) -> List[Payments]:
+async def upload_last_payment(processing_status: ProcessingStatus) -> List[Payments]:
+    """Choose last request from user in selected processing status"""
     async with SessionLocal() as session:
-        result = await session.execute(select(Payments).filter(Payments.processing_status == processing_status))
-        return result.scalars().all()
+        result = await session.execute(
+            select(Payments).filter(
+                Payments.processing_status == processing_status).order_by(Payments.payment_date.desc()),
+        )
+        return result.scalars().first()
 
 
-async def change_processing_status(
+async def update_statuses(
         payment: Payments, processing_status: ProcessingStatus,
+        payment_status: PaymentStatus = PaymentStatus.unknown,
 ) -> None:
     async with SessionLocal() as session:
         result = await session.execute(
             select(Payments).filter(Payments.id == payment.id),
         )
         db_payment = result.scalars().first()
-        db_payment.status = processing_status
+        db_payment.processing_status = processing_status
+        db_payment.payment_status = payment_status
         await session.commit()
