@@ -3,6 +3,7 @@ import string
 from typing import List, Optional
 
 from sqlalchemy import func
+import uuid
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.future import select
 from werkzeug.security import generate_password_hash
@@ -86,12 +87,12 @@ async def upload_payments(processing_status: ProcessingStatus) -> List[Payments]
 
 
 async def update_statuses(
-        payment: Payments, processing_status: ProcessingStatus,
+        payment_id: uuid.uuid4, processing_status: ProcessingStatus,
         payment_status: PaymentStatus = PaymentStatus.unknown,
 ) -> None:
     async with SessionLocal() as session:
         result = await session.execute(
-            select(Payments).filter(Payments.id == payment.id),
+            select(Payments).filter(Payments.id == payment_id),
         )
         db_payment = result.scalars().first()
         db_payment.processing_status = processing_status

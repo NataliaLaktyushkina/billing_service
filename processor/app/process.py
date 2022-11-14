@@ -1,3 +1,4 @@
+import uuid
 from http import HTTPStatus
 from typing import List
 
@@ -5,21 +6,20 @@ import requests
 
 from core.config import settings
 from core.logger import logger
-from postgresql.db_settings.db_models import Payments
 from postgresql.db_settings.db_models import ProcessingStatus, PaymentStatus
 from postgresql.db_settings.db_service import update_statuses
 
 
-async def process_payments(payments: List[Payments]):
+async def process_payments(payments: List[uuid.uuid4]):
     for payment in payments:
         await update_statuses(
-            payment=payment,
+            payment_id=payment,
             processing_status=ProcessingStatus.in_processing,
         )
         await send_to_processing(payment=payment)
 
 
-async def send_to_processing(payment: Payments):
+async def send_to_processing(payment: uuid.uuid4):
     response = requests.get(
         f'{settings.PROCESSOR}/execute_transaction',
     )
@@ -30,7 +30,7 @@ async def send_to_processing(payment: Payments):
     else:
         payment_status = PaymentStatus.error
     await update_statuses(
-        payment=payment,
+        payment_id=payment,
         processing_status=new_processing_status,
         payment_status=payment_status,
     )
