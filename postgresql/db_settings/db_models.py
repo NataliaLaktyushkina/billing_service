@@ -40,6 +40,7 @@ class ProcessingStatus(enum.Enum):
     in_processing = 'in processing'
     processed = 'processed'
     completed = 'completed'
+    duplicated = 'duplicated'
 
 
 class PaymentStatus(enum.Enum):

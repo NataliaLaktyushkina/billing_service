@@ -66,7 +66,7 @@ async def extract_new_payments() -> List[Payments]:
         return result.scalars().all()
 
 
-async def upload_payments(processing_status: ProcessingStatus) -> List[Payments]:
+async def upload_payments(processing_status: ProcessingStatus) -> List[uuid.uuid4]:
     """Choose last request from user in selected processing status"""
     async with SessionLocal() as session:
         subq = select(
@@ -84,6 +84,27 @@ async def upload_payments(processing_status: ProcessingStatus) -> List[Payments]
         )
 
         return result.scalars().all()
+
+
+async def mark_duplicates(original_payments=List[uuid.uuid4]):
+    async with SessionLocal() as session:
+        # 1. find dublicates
+        subq = select(
+            Payments.user_id.label('user_id'),
+        ).filter(
+            Payments.id.in_(original_payments),
+        ).subquery()
+        result = await session.execute(
+            select(Payments).join(
+                subq, Payments.user_id == subq.c.user_id,
+            ).filter(
+                Payments.processing_status == ProcessingStatus.new,
+            ),
+        )
+        result.all()
+
+
+
 
 
 async def update_statuses(
