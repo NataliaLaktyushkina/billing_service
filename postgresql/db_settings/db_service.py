@@ -65,7 +65,7 @@ async def extract_new_payments() -> List[Payments]:
         return result.scalars().all()
 
 
-async def upload_payments(processing_status: ProcessingStatus) -> List[Payments.id]:
+async def upload_payments(processing_status: ProcessingStatus) -> List[Payments]:
     """Choose last request from user in selected processing status"""
     async with SessionLocal() as session:
         subq = select(

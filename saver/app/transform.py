@@ -18,7 +18,7 @@ async def transform_data(kafka_data: List[dict]):
         value = msg['value'].decode('utf-8')
         value_dict = ast.literal_eval(value)
         data['payment_type'] = PaymentsTypes[value_dict['payment_type']]
-        payment_date = int(msg['timestamp'] / 1000)
+        payment_date = msg['timestamp'] / 1000
         data['payment_date'] = datetime.fromtimestamp(payment_date)
 
         processed_data.append(data)
