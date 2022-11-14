@@ -2,6 +2,7 @@ import secrets
 import string
 from typing import List, Optional
 
+from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.future import select
 from werkzeug.security import generate_password_hash
@@ -64,14 +65,24 @@ async def extract_new_payments() -> List[Payments]:
         return result.scalars().all()
 
 
-async def upload_last_payment(processing_status: ProcessingStatus) -> List[Payments]:
+async def upload_payments(processing_status: ProcessingStatus) -> List[Payments.id]:
     """Choose last request from user in selected processing status"""
     async with SessionLocal() as session:
+        subq = select(
+            func.max(Payments.payment_date).label('payments_date'),
+            Payments.user_id.label('user_id'),
+        ).filter(
+                Payments.processing_status == processing_status,
+            ).group_by(Payments.user_id).subquery()
+
         result = await session.execute(
-            select(Payments).filter(
-                Payments.processing_status == processing_status).order_by(Payments.payment_date.desc()),
+            select(Payments.id).join(
+               subq, (Payments.payment_date == subq.c.payments_date) &  # noqa: W504
+                     (Payments.user_id == subq.c.user_id),
+            ),
         )
-        return result.scalars().first()
+
+        return result.scalars().all()
 
 
 async def update_statuses(
