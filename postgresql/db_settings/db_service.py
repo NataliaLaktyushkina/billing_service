@@ -90,7 +90,6 @@ async def upload_payments(processing_status: ProcessingStatus) -> List[uuid.uuid
 
 async def mark_duplicates(original_payments=List[uuid.uuid4]):
     async with SessionLocal() as session:
-        # 1. find dublicates
         subq = select(
             Payments.user_id.label('user_id'),
         ).filter(
