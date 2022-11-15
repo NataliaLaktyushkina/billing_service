@@ -2,7 +2,7 @@ import secrets
 import string
 from typing import List, Optional
 
-from sqlalchemy import func
+from sqlalchemy import func, update
 import uuid
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.future import select
@@ -73,13 +73,13 @@ async def upload_payments(processing_status: ProcessingStatus) -> List[uuid.uuid
             func.max(Payments.payment_date).label('payments_date'),
             Payments.user_id.label('user_id'),
         ).filter(
-                Payments.processing_status == processing_status,
-            ).group_by(Payments.user_id).subquery()
+            Payments.processing_status == processing_status,
+        ).group_by(Payments.user_id).subquery()
 
         result = await session.execute(
             select(Payments.id).join(
-               subq, (Payments.payment_date == subq.c.payments_date) &  # noqa: W504
-                     (Payments.user_id == subq.c.user_id),
+                subq, (Payments.payment_date == subq.c.payments_date) &  # noqa: W504
+                      (Payments.user_id == subq.c.user_id),
             ),
         )
 
@@ -95,27 +95,28 @@ async def mark_duplicates(original_payments=List[uuid.uuid4]):
             Payments.id.in_(original_payments),
         ).subquery()
         result = await session.execute(
-            select(Payments).join(
-                subq, Payments.user_id == subq.c.user_id,
+            select(Payments.id).join(
+                subq, (Payments.user_id == subq.c.user_id) &  # noqa : W504
+                      (Payments.id.not_in(original_payments)),
             ).filter(
                 Payments.processing_status == ProcessingStatus.new,
             ),
         )
-        result.all()
-
-
-
+        await update_statuses(result.scalars().all(),
+                              processing_status=ProcessingStatus.duplicated)
 
 
 async def update_statuses(
-        payment_id: uuid.uuid4, processing_status: ProcessingStatus,
+        payment_id: List[uuid.uuid4], processing_status: ProcessingStatus,
         payment_status: PaymentStatus = PaymentStatus.unknown,
 ) -> None:
     async with SessionLocal() as session:
-        result = await session.execute(
-            select(Payments).filter(Payments.id == payment_id),
+        await session.execute(
+            update(
+                Payments,
+            ).where(
+                Payments.id.in_(payment_id),
+            ).values(processing_status=processing_status,
+                     payment_status=payment_status),
         )
-        db_payment = result.scalars().first()
-        db_payment.processing_status = processing_status
-        db_payment.payment_status = payment_status
         await session.commit()

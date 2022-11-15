@@ -1,7 +1,6 @@
 .env
 notes.md
 /docker-compose.override.yml
-alembic/versions
 postgresql/data
 flake-report
 .mypy_cache
