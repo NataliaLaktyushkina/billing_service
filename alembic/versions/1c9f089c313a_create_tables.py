@@ -1,8 +1,8 @@
-"""create table
+"""create tables
 
-Revision ID: 02c7edc01004
-Revises: 22b8892feb53
-Create Date: 2022-11-15 00:26:22.006153
+Revision ID: 1c9f089c313a
+Revises: c928f3232350
+Create Date: 2022-11-15 11:37:21.013195
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '02c7edc01004'
-down_revision = '22b8892feb53'
+revision = '1c9f089c313a'
+down_revision = 'c928f3232350'
 branch_labels = None
 depends_on = None
 
@@ -34,6 +34,7 @@ def upgrade() -> None:
     sa.Column('payment_status', sa.Enum('accepted', 'error', 'rejected', 'unknown', name='paymentstatus'), nullable=True),
     sa.Column('payment_date', sa.DateTime(), nullable=False),
     sa.Column('payment_type', sa.Enum('payment', 'refund', name='paymentstypes'), nullable=False),
+    sa.Column('expiration_date', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('id')

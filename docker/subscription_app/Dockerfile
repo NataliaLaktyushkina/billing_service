@@ -12,6 +12,7 @@ RUN pip install --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 
 COPY /subscription_app/src /app
+COPY /postgresql/db_settings /app/postgresql/db_settings
 
 # create entrypoint for Kafka and ClickHouse waiting
 COPY /docker/subscription_app/entrypoint.sh .

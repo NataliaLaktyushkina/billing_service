@@ -1,3 +1,4 @@
+import datetime
 import secrets
 import string
 from typing import List, Optional
@@ -48,6 +49,7 @@ async def add_payment(payment_data: List[dict]):
             processing_status=ProcessingStatus.new,
             payment_date=payment['payment_date'],
             payment_type=payment['payment_type'],
+            expiration_date=payment['expiration_date'],
         )
         service.add(new_payment)
     try:
@@ -120,3 +122,20 @@ async def update_statuses(
                      payment_status=payment_status),
         )
         await session.commit()
+
+
+async def check_subscription(user_id: str) -> bool:
+    """Check if subscription exists"""
+    current_date = datetime.datetime.now()
+    async with SessionLocal() as session:
+        result = await session.execute(
+            select(Payments).filter(
+                (Payments.user_id == user_id) &  # noqa: W504
+                (Payments.processing_status == ProcessingStatus.processed) &  # noqa: W504
+                (Payments.payment_status == PaymentStatus.accepted) &  # noqa: W504
+                (Payments.expiration_date > current_date),
+            ),
+        )
+        if len(result.all()):
+            return True
+        return False
