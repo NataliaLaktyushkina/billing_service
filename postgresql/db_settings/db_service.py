@@ -1,13 +1,16 @@
+import datetime
 import secrets
 import string
 from typing import List, Optional
 
+from sqlalchemy import func, update
+import uuid
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.future import select
 from werkzeug.security import generate_password_hash
 
 from postgresql.db_settings.db import SessionLocal
-from postgresql.db_settings.db_models import User, PaymentsNew, Payments, PaymentsStatus
+from postgresql.db_settings.db_models import User, Payments, ProcessingStatus, PaymentStatus
 from postgresql.db_settings.logger import logger
 
 
@@ -40,13 +43,14 @@ def create_user(username, email, password: Optional[str] = None):
 async def add_payment(payment_data: List[dict]):
     service = SessionLocal()
     for payment in payment_data:
-        new_payment = PaymentsNew(
+        new_payment = Payments(
             user_id=payment['user_id'],
             subscription_type=payment['subscription_type'],
+            processing_status=ProcessingStatus.new,
             payment_date=payment['payment_date'],
             payment_type=payment['payment_type'],
+            expiration_date=payment['expiration_date'],
         )
-
         service.add(new_payment)
     try:
         await service.commit()
@@ -54,46 +58,83 @@ async def add_payment(payment_data: List[dict]):
         logger.error(msg='Could not add payment')
 
 
-async def extract_new_payments() -> List[PaymentsNew]:
-    async with SessionLocal() as session:
-        result = await session.execute(select(PaymentsNew))
-        return result.scalars().all()
-
-
-async def upload_payments(status: PaymentsStatus) -> List[Payments]:
-    async with SessionLocal() as session:
-        result = await session.execute(select(Payments).filter(Payments.status == status))
-        return result.scalars().all()
-
-
-async def change_payment_status(
-        payment: Payments, status: PaymentsStatus,
-) -> None:
+async def extract_new_payments() -> List[Payments]:
     async with SessionLocal() as session:
         result = await session.execute(
-            select(Payments).filter(Payments.id == payment.id),
+            select(Payments).filter(
+                Payments.processing_status == ProcessingStatus.new,
+            ),
         )
-        db_payment = result.scalars().first()
-        db_payment.status = status
-        await session.commit()
+        return result.scalars().all()
 
 
-async def load_data_to_payments(new_payments: List[PaymentsNew]) -> None:
+async def upload_payments(processing_status: ProcessingStatus) -> List[uuid.uuid4]:
+    """Choose last request from user in selected processing status"""
     async with SessionLocal() as session:
-        for new_payment in new_payments:
-            payment = Payments(
-                user_id=new_payment.user_id,
-                subscription_type=new_payment.subscription_type,
-                status=PaymentsStatus.to_process,
-                payment_date=new_payment.payment_date,
-                payment_type=new_payment.payment_type,
-            )
-            session.add(payment)
-        await session.commit()
+        subq = select(
+            func.max(Payments.payment_date).label('payments_date'),
+            Payments.user_id.label('user_id'),
+        ).filter(
+            Payments.processing_status == processing_status,
+        ).group_by(Payments.user_id).subquery()
+
+        result = await session.execute(
+            select(Payments.id).join(
+                subq, (Payments.payment_date == subq.c.payments_date) &  # noqa: W504
+                      (Payments.user_id == subq.c.user_id),
+            ),
+        )
+
+        return result.scalars().all()
 
 
-async def delete_new_payments(new_payments: List[PaymentsNew]) -> None:
+async def mark_duplicates(original_payments=List[uuid.uuid4]):
     async with SessionLocal() as session:
-        for new_payment in new_payments:
-            await session.delete(new_payment)
+        subq = select(
+            Payments.user_id.label('user_id'),
+        ).filter(
+            Payments.id.in_(original_payments),
+        ).subquery()
+        result = await session.execute(
+            select(Payments.id).join(
+                subq, (Payments.user_id == subq.c.user_id) &  # noqa : W504
+                      (Payments.id.not_in(original_payments)),
+            ).filter(
+                Payments.processing_status == ProcessingStatus.new,
+            ),
+        )
+        await update_statuses(result.scalars().all(),
+                              processing_status=ProcessingStatus.duplicated)
+
+
+async def update_statuses(
+        payment_id: List[uuid.uuid4], processing_status: ProcessingStatus,
+        payment_status: PaymentStatus = PaymentStatus.unknown,
+) -> None:
+    async with SessionLocal() as session:
+        await session.execute(
+            update(
+                Payments,
+            ).where(
+                Payments.id.in_(payment_id),
+            ).values(processing_status=processing_status,
+                     payment_status=payment_status),
+        )
         await session.commit()
+
+
+async def check_subscription(user_id: str) -> bool:
+    """Check if subscription exists"""
+    current_date = datetime.datetime.now()
+    async with SessionLocal() as session:
+        result = await session.execute(
+            select(Payments).filter(
+                (Payments.user_id == user_id) &  # noqa: W504
+                (Payments.processing_status == ProcessingStatus.processed) &  # noqa: W504
+                (Payments.payment_status == PaymentStatus.accepted) &  # noqa: W504
+                (Payments.expiration_date > current_date),
+            ),
+        )
+        if len(result.all()):
+            return True
+        return False

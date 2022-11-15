@@ -50,13 +50,13 @@ services:
     depends_on:
       - broker
 
-  worker:
-    container_name: worker
-    build:
-      context: .
-      dockerfile: docker/worker/Dockerfile
-    depends_on:
-      - postgres
+#  worker:
+#    container_name: worker
+#    build:
+#      context: .
+#      dockerfile: docker/worker/Dockerfile
+#    depends_on:
+#      - postgres
 
 
   zookeeper:
