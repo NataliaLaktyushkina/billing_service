@@ -19,13 +19,6 @@ services:
     volumes:
       - ./postgresql/data:/var/lib/postgresql/data
 
-#  processing:
-#    container_name: processing
-#    build:
-#      context: .
-#      dockerfile: docker/processing/Dockerfile
-
-
   processor:
     container_name: processor
     build:

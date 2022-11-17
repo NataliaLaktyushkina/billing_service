@@ -1,10 +1,10 @@
 import datetime
 import secrets
 import string
+import uuid
 from typing import List, Optional
 
 from sqlalchemy import func, update
-import uuid
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.future import select
 from werkzeug.security import generate_password_hash
