@@ -1,10 +1,10 @@
 import datetime
 import secrets
 import string
+import uuid
 from typing import List, Optional
 
 from sqlalchemy import func, update
-import uuid
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.future import select
 from werkzeug.security import generate_password_hash
@@ -130,7 +130,7 @@ async def check_subscription(user_id: str) -> bool:
         result = await session.execute(
             select(Payments).filter(
                 (Payments.user_id == user_id) &  # noqa: W504
-                (Payments.processing_status == ProcessingStatus.processed) &  # noqa: W504
+                (Payments.processing_status == ProcessingStatus.completed) &  # noqa: W504
                 (Payments.payment_status == PaymentStatus.accepted) &  # noqa: W504
                 (Payments.expiration_date > current_date),
             ),

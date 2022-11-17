@@ -13,6 +13,7 @@ if not IS_DOCKER:
 class Settings(BaseSettings):
 
     PROCESSOR: Optional[str]
+    STRIPE_API_KEY: Optional[str]
 
     class Config:
         env_file = '.env'

@@ -19,12 +19,6 @@ services:
     volumes:
       - ./postgresql/data:/var/lib/postgresql/data
 
-  processing:
-    container_name: processing
-    build:
-      context: .
-      dockerfile: docker/processing/Dockerfile
-
   processor:
     container_name: processor
     build:
@@ -49,15 +43,6 @@ services:
       dockerfile: docker/subscription_app/Dockerfile
     depends_on:
       - broker
-
-#  worker:
-#    container_name: worker
-#    build:
-#      context: .
-#      dockerfile: docker/worker/Dockerfile
-#    depends_on:
-#      - postgres
-
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.0.1

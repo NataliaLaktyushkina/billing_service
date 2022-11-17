@@ -20,7 +20,6 @@
 **Processing statuses:**
 - new - платеж создан/отправлен (subscription_app)
 - in_processing - платеж в обработке, отправлен в процессинг (processor)
-- processed - платеж обработан (произошло движение по счетам) (processing)
 - completed -  отправлено уведомление пользователю (notification app)
 - duplicated - пользователь несколько раз отправил запрос на подписку
 
@@ -53,22 +52,19 @@ API - позволяет оплатить подписку либо вернут
 
 **Processor:**
 
-Отправляет в процессинг последний запрос на платеж от пользователя (processing_status = new).
+Отправляет в процессинг (stripe) последний запрос на платеж от пользователя (processing_status = new).
 Данные платеж в БД переходит в processing_status = in_processing.
 
-
-**Processing:**
-
-*http://127.0.0.1:5001/execute_transaction*
-
-[Имитирует](processing/main.py) обращение к внешнему сервису процессинга.
-Возвращает ответ - выполнена ли транзакция (success) или нет (error)
-
+Полсе ответа от stripe:
 Платеж в БД переход в processing_status = processed.
-Задублированные запросы от пользователя переход в  processing_status = duplicated.
+Задублированные запросы от пользователя переходят в  processing_status = duplicated.
 Платеж считается дублем, если:
  - от пользователя уже есть запрос на подписку
  - платеж в processing_status = new
+
+Send notification from stripe:
+
+https://dashboard.stripe.com/test/payments
 
 **Kafka:**
 
