@@ -1,7 +1,7 @@
 from core.logger import logger
 from postgresql.db_settings.db_models import ProcessingStatus
 from postgresql.db_settings.db_service import upload_payments
-from process import process_payments
+from services.process import process_payments
 from postgresql.db_settings.db_service import mark_duplicates
 
 

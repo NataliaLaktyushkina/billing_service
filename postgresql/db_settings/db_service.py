@@ -130,7 +130,7 @@ async def check_subscription(user_id: str) -> bool:
         result = await session.execute(
             select(Payments).filter(
                 (Payments.user_id == user_id) &  # noqa: W504
-                (Payments.processing_status == ProcessingStatus.processed) &  # noqa: W504
+                (Payments.processing_status == ProcessingStatus.completed) &  # noqa: W504
                 (Payments.payment_status == PaymentStatus.accepted) &  # noqa: W504
                 (Payments.expiration_date > current_date),
             ),

@@ -1,6 +1,6 @@
 import asyncio
 
-from extract import extract_payments
+from services.extract import extract_payments
 
 
 async def exctractor() -> None:

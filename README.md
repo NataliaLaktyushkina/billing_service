@@ -20,7 +20,6 @@
 **Processing statuses:**
 - new - платеж создан/отправлен (subscription_app)
 - in_processing - платеж в обработке, отправлен в процессинг (processor)
-- processed - платеж обработан (произошло движение по счетам) (processing)
 - completed -  отправлено уведомление пользователю (notification app)
 - duplicated - пользователь несколько раз отправил запрос на подписку
 
