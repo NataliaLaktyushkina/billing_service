@@ -1,3 +1,4 @@
+import datetime
 from enum import Enum
 
 from core.config import settings
@@ -17,6 +18,11 @@ class SubscriptionId(str, Enum):
     month = 'month'
     three_months = 'three_months'
     year = 'year'
+
+
+class Subscription(BaseOrjsonModel):
+    subscription_type: SubscriptionId
+    expiration_date: datetime.datetime
 
 
 class PaymentType(str, Enum):

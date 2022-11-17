@@ -123,7 +123,7 @@ async def update_statuses(
         await session.commit()
 
 
-async def check_subscription(user_id: str) -> bool:
+async def list_user_payments(user_id: str) -> List[Payments]:
     """Check if subscription exists"""
     current_date = datetime.datetime.now()
     async with SessionLocal() as session:
@@ -135,6 +135,4 @@ async def check_subscription(user_id: str) -> bool:
                 (Payments.expiration_date > current_date),
             ),
         )
-        if len(result.all()):
-            return True
-        return False
+        return result.scalars().all()
