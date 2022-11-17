@@ -1,4 +1,5 @@
 import datetime
+import uuid
 from enum import Enum
 
 from core.config import settings
@@ -21,6 +22,7 @@ class SubscriptionId(str, Enum):
 
 
 class Subscription(BaseOrjsonModel):
+    id: uuid.UUID
     subscription_type: SubscriptionId
     expiration_date: datetime.datetime
 

@@ -28,15 +28,12 @@ class PaymentHandler:
         subscription_list = []
         for payment in payments:
             subscription = Subscription(
+                id=payment.id,
                 subscription_type=SubscriptionId[payment.subscription_type],
                 expiration_date=payment.expiration_date,
             )
             subscription_list.append(subscription)
         return subscription_list
-
-
-
-
 
 
 def get_payment_handler(
