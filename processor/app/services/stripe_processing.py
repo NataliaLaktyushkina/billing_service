@@ -19,9 +19,11 @@ def generate_card() -> PaymentMethod:
     return customers_card
 
 
-def generate_payment_intent(payment_method: PaymentMethod) -> PaymentIntent:
+def generate_payment_intent(
+        amount: int,
+        payment_method: PaymentMethod) -> PaymentIntent:
     payment_intent = stripe.PaymentIntent.create(
-        amount=20000,
+        amount=amount,
         currency='rub',
         payment_method_types=['card'],
         payment_method=payment_method,
@@ -31,11 +33,12 @@ def generate_payment_intent(payment_method: PaymentMethod) -> PaymentIntent:
     return payment_intent
 
 
-def process_payment() -> PaymentIntent:
+def process_payment(amount: int) -> PaymentIntent:
     # Receipts for payments created using test API keys are not sent automatically.
     # Instead, you can view or manually send a receipt using the Dashboard.
     customers_card = generate_card()
     payment_intent = generate_payment_intent(
+        amount=amount,
         payment_method=customers_card,
     )
 

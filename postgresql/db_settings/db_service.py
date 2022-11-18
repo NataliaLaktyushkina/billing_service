@@ -79,13 +79,13 @@ async def upload_payments(processing_status: ProcessingStatus) -> List[uuid.uuid
         ).group_by(Payments.user_id).subquery()
 
         result = await session.execute(
-            select(Payments.id).join(
+            select(Payments.id, Payments.subscription_type, Payments.payment_date).join(
                 subq, (Payments.payment_date == subq.c.payments_date) &  # noqa: W504
                       (Payments.user_id == subq.c.user_id),
             ),
         )
 
-        return result.scalars().all()
+        return result.all()
 
 
 async def mark_duplicates(original_payments=List[uuid.uuid4]):
@@ -123,18 +123,16 @@ async def update_statuses(
         await session.commit()
 
 
-async def check_subscription(user_id: str) -> bool:
+async def list_user_payments(user_id: List[str]) -> List[Payments]:
     """Check if subscription exists"""
     current_date = datetime.datetime.now()
     async with SessionLocal() as session:
         result = await session.execute(
             select(Payments).filter(
-                (Payments.user_id == user_id) &  # noqa: W504
+                (Payments.user_id.in_(user_id)) &  # noqa: W504
                 (Payments.processing_status == ProcessingStatus.completed) &  # noqa: W504
                 (Payments.payment_status == PaymentStatus.accepted) &  # noqa: W504
                 (Payments.expiration_date > current_date),
             ),
         )
-        if len(result.all()):
-            return True
-        return False
+        return result.scalars().all()

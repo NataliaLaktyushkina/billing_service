@@ -2,6 +2,8 @@
 
 [Репозиторий c дипломной работой](https://github.com/NataliaLaktyushkina/graduate_work)
 
+![Схема](scheme/billing_scheme.drawio.png)
+
 ## Запуск проекта
 `docker compose up`
 
@@ -44,6 +46,8 @@ API - позволяет оплатить подписку либо вернут
 Если у пользователя уже есть подписка, то запрос на платеж не отправляется.
 
 Все запросы от пользователя складываются в очередь (kafka).
+
+![Endpoints](scheme/API.png)
 
 **Saver**:
 

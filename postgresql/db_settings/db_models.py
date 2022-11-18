@@ -4,7 +4,7 @@ import enum
 from typing import Optional
 
 from sqlalchemy import ForeignKey, UniqueConstraint
-from sqlalchemy import Column, String, Date, DateTime, Float, Enum
+from sqlalchemy import Column, String, Date, DateTime, Integer, Enum
 from sqlalchemy import or_
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -64,10 +64,13 @@ class SubscriptionTypes(str, enum.Enum):
 class SubscriptionCost(Base):
     """Model to represent roles"""
     __tablename__ = 'subscription_cost'
+    __table_args__ = (
+        UniqueConstraint('subscription_type', 'creation_date'),
+    )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     subscription_type = Column(Enum(SubscriptionTypes), nullable=False)
-    cost = Column(Float(precision=2), nullable=False)
+    cost = Column(Integer, nullable=False)
     creation_date = Column(Date, default=datetime.utcnow(), nullable=False)
 
 

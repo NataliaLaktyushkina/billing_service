@@ -1,9 +1,12 @@
+from typing import List
+
 from fastapi import APIRouter, Depends
-from models.payment import PaymentAccepted, Payment
+
+from core.config import settings
+from models.payment import PaymentAccepted, Payment, UserSubscription
 from models.payment import SubscriptionId, PaymentStatus, PaymentType
 from services.jwt_check import JWTBearer
 from services.payments import PaymentHandler, get_payment_handler
-from core.config import settings
 
 router = APIRouter()
 
@@ -22,3 +25,13 @@ async def proceed_payment(
                       status=PaymentStatus.new,
                       payment_type=payment_type)
     return await service.send_payment(payment, user_id)
+
+
+@router.get('/', description='User subscriptions',
+            response_model=List[UserSubscription],
+            response_description='List of subscriptions')
+async def subscriptions_list(
+        user_id: str = Depends(JWTBearer()),
+        service: PaymentHandler = Depends(get_payment_handler),
+) -> List[UserSubscription]:
+    return await service.subscriptions_list(user_id=user_id)
