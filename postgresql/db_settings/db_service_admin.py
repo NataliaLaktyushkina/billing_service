@@ -23,5 +23,6 @@ async def change_subscription_cost(
     service.add(new_cost)
     try:
         await service.commit()
+        return True
     except IntegrityError:
-        logger.error(msg='Could not add subscription_cost')
+        logger.error(msg='Check date and subscription type')
