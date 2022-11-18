@@ -2,6 +2,8 @@
 
 [Репозиторий c дипломной работой](https://github.com/NataliaLaktyushkina/graduate_work)
 
+![Схема](scheme/billing_scheme.drawio.png)
+
 ## Запуск проекта
 `docker compose up`
 

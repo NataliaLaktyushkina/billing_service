@@ -79,13 +79,13 @@ async def upload_payments(processing_status: ProcessingStatus) -> List[uuid.uuid
         ).group_by(Payments.user_id).subquery()
 
         result = await session.execute(
-            select(Payments.id).join(
+            select(Payments.id, Payments.subscription_type, Payments.payment_date).join(
                 subq, (Payments.payment_date == subq.c.payments_date) &  # noqa: W504
                       (Payments.user_id == subq.c.user_id),
             ),
         )
 
-        return result.scalars().all()
+        return result.all()
 
 
 async def mark_duplicates(original_payments=List[uuid.uuid4]):

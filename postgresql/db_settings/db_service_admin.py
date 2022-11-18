@@ -42,7 +42,7 @@ async def get_subscriptions_cost(
             SubscriptionCost.subscription_type.label('subscription'),
         ).filter(
             (SubscriptionCost.creation_date <= cost_date) &  # noqa: W504
-            (SubscriptionCost.creation_date >= today),
+            (SubscriptionCost.creation_date <= today),
         ).group_by(SubscriptionCost.subscription_type).subquery()
 
         result = await session.execute(
