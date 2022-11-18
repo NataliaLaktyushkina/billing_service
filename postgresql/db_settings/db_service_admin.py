@@ -1,6 +1,9 @@
 import datetime
+from typing import List
 
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.future import select
+from sqlalchemy import func
 
 from postgresql.db_settings.db import SessionLocal
 from postgresql.db_settings.db_models import SubscriptionCost, SubscriptionTypes
@@ -26,3 +29,26 @@ async def change_subscription_cost(
         return True
     except IntegrityError:
         logger.error(msg='Check date and subscription type')
+
+
+async def get_subscriptions_cost(
+        cost_date: datetime.date,
+) -> List[SubscriptionCost]:
+    async with SessionLocal() as session:
+        today = datetime.date.today()
+
+        subq = select(
+            func.max(SubscriptionCost.creation_date).label('creation_date'),
+            SubscriptionCost.subscription_type.label('subscription'),
+        ).filter(
+            (SubscriptionCost.creation_date <= cost_date) &  # noqa: W504
+            (SubscriptionCost.creation_date >= today),
+        ).group_by(SubscriptionCost.subscription_type).subquery()
+
+        result = await session.execute(
+            select(SubscriptionCost).join(
+                subq, (SubscriptionCost.subscription_type == subq.c.subscription) &  # noqa: W504
+                      (SubscriptionCost.creation_date == subq.c.creation_date),
+            ),
+        )
+        return result.scalars().all()

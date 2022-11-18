@@ -129,7 +129,7 @@ async def list_user_payments(user_id: str) -> List[Payments]:
     async with SessionLocal() as session:
         result = await session.execute(
             select(Payments).filter(
-                (Payments.user_id == user_id) &  # noqa: W504
+                (Payments.user_id.in_(user_id)) &  # noqa: W504
                 (Payments.processing_status == ProcessingStatus.completed) &  # noqa: W504
                 (Payments.payment_status == PaymentStatus.accepted) &  # noqa: W504
                 (Payments.expiration_date > current_date),

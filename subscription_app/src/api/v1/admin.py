@@ -2,10 +2,12 @@ from datetime import date
 
 from fastapi import APIRouter, Depends, Query
 
-from models.admin import CostUpdated
+from models.admin import CostUpdated, SubscriptionCost
 from models.payment import SubscriptionId
-from services.admin import change_cost_subscription
+from services.admin import change_cost_subscription, subscriptions_cost
 from services.jwt_check import JWTBearer
+
+from typing import List
 
 router = APIRouter()
 
@@ -24,3 +26,13 @@ async def update_subscription_cost(
         new_cost=new_cost,
         starting_date=starting_date,
     )
+
+
+@router.get('/', description='List of subscriptions with cost',
+            response_model=List[SubscriptionCost],
+            response_description='List of subscriptions with cost')
+async def get_subscriptions_cost(
+        cost_date: date = Query(default=date.today()),
+        user_id: str = Depends(JWTBearer()),
+) -> List[SubscriptionCost]:
+    return await subscriptions_cost(cost_date=cost_date)

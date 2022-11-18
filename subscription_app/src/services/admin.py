@@ -1,10 +1,11 @@
 import datetime
+from typing import Union, List
 
-from models.admin import CostUpdated
-from postgresql.db_settings.db_service_admin import change_subscription_cost
 from fastapi.responses import JSONResponse
 
-from typing import Union
+from models.admin import CostUpdated, SubscriptionCost
+from postgresql.db_settings.db_service_admin import change_subscription_cost
+from postgresql.db_settings.db_service_admin import get_subscriptions_cost
 
 
 async def change_cost_subscription(
@@ -21,3 +22,9 @@ async def change_cost_subscription(
         return CostUpdated(updated=cost_updated)
     else:
         return JSONResponse(content='Check date and subscription type')
+
+
+async def subscriptions_cost(cost_date: datetime.date) -> List[SubscriptionCost]:
+    list_costs = await get_subscriptions_cost(cost_date=cost_date)
+    return [SubscriptionCost(subscription=lc.subscription_type,
+                             cost=lc.cost) for lc in list_costs]

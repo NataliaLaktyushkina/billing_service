@@ -1,12 +1,8 @@
 from .json_config import BaseOrjsonModel
 
 
-class Subscription(BaseOrjsonModel):
-    name: str
-
-
 class SubscriptionCost(BaseOrjsonModel):
-    subscription: Subscription
+    subscription: str
     cost: int
 
 
