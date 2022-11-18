@@ -64,6 +64,9 @@ class SubscriptionTypes(str, enum.Enum):
 class SubscriptionCost(Base):
     """Model to represent roles"""
     __tablename__ = 'subscription_cost'
+    __table_args__ = (
+        UniqueConstraint('subscription_type', 'creation_date'),
+    )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     subscription_type = Column(Enum(SubscriptionTypes), nullable=False)

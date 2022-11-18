@@ -4,7 +4,7 @@ from fastapi import Depends
 from fastapi.responses import JSONResponse
 
 from db.kafka import get_kafka
-from models.payment import PaymentAccepted, Payment, Subscription, SubscriptionId
+from models.payment import PaymentAccepted, Payment, UserSubscription, SubscriptionId
 from services.service import AbstractPaymentStorage, KafkaStorage
 from postgresql.db_settings.db_service import list_user_payments
 
@@ -23,11 +23,11 @@ class PaymentHandler:
         return PaymentAccepted(accepted=payment_accepted)
 
     @staticmethod
-    async def subscriptions_list(user_id: str) -> List[Subscription]:
+    async def subscriptions_list(user_id: str) -> List[UserSubscription]:
         payments = await list_user_payments(user_id=user_id)
         subscription_list = []
         for payment in payments:
-            subscription = Subscription(
+            subscription = UserSubscription(
                 id=payment.id,
                 subscription_type=SubscriptionId[payment.subscription_type],
                 expiration_date=payment.expiration_date,

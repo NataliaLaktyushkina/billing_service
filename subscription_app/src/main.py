@@ -3,7 +3,7 @@ from aiokafka import AIOKafkaProducer
 from fastapi import FastAPI, Depends
 from fastapi.responses import ORJSONResponse
 
-from api.v1 import payment
+from api.v1 import payment, admin
 from core.config import settings
 from db import kafka
 from services.jwt_check import JWTBearer
@@ -32,7 +32,9 @@ async def shutdown():
 
 
 app.include_router(payment.router, prefix='/api/v1/payments',
-                   tags=['payments'], dependencies=PROTECTED)
+                   tags=['users'], dependencies=PROTECTED)
+app.include_router(admin.router, prefix='/api/v1/admin',
+                   tags=['admins'], dependencies=PROTECTED)
 
 if __name__ == '__main__':
     uvicorn.run(

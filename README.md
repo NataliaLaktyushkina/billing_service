@@ -45,7 +45,7 @@ API - позволяет оплатить подписку либо вернут
 
 Все запросы от пользователя складываются в очередь (kafka).
 
-[Endpoints](scheme/API.png)
+![Endpoints](scheme/API.png)
 
 **Saver**:
 

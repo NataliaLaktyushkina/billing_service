@@ -21,7 +21,7 @@ class SubscriptionId(str, Enum):
     year = 'year'
 
 
-class Subscription(BaseOrjsonModel):
+class UserSubscription(BaseOrjsonModel):
     id: uuid.UUID
     subscription_type: SubscriptionId
     expiration_date: datetime.datetime
