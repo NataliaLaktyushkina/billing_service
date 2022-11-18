@@ -6,7 +6,7 @@ from sqlalchemy.future import select
 from sqlalchemy import func
 
 from postgresql.db_settings.db import SessionLocal
-from postgresql.db_settings.db_models import SubscriptionCost, SubscriptionTypes
+from postgresql.db_settings.db_models import SubscriptionCost, SubscriptionTypes, User
 from postgresql.db_settings.logger import logger
 
 
@@ -50,5 +50,13 @@ async def get_subscriptions_cost(
                 subq, (SubscriptionCost.subscription_type == subq.c.subscription) &  # noqa: W504
                       (SubscriptionCost.creation_date == subq.c.creation_date),
             ),
+        )
+        return result.scalars().all()
+
+
+async def get_users_list() -> List[str]:
+    async with SessionLocal() as session:
+        result = await session.execute(
+            select(User.id),
         )
         return result.scalars().all()

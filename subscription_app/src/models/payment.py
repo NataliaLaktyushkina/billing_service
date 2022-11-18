@@ -23,6 +23,7 @@ class SubscriptionId(str, Enum):
 
 class UserSubscription(BaseOrjsonModel):
     id: uuid.UUID
+    user_id: uuid.UUID
     subscription_type: SubscriptionId
     expiration_date: datetime.datetime
 

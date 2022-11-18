@@ -24,11 +24,12 @@ class PaymentHandler:
 
     @staticmethod
     async def subscriptions_list(user_id: str) -> List[UserSubscription]:
-        payments = await list_user_payments(user_id=user_id)
+        payments = await list_user_payments(user_id=[user_id])
         subscription_list = []
         for payment in payments:
             subscription = UserSubscription(
                 id=payment.id,
+                user_id=payment.user_id,
                 subscription_type=SubscriptionId[payment.subscription_type],
                 expiration_date=payment.expiration_date,
             )

@@ -3,8 +3,8 @@ from datetime import date
 from fastapi import APIRouter, Depends, Query
 
 from models.admin import CostUpdated, SubscriptionCost
-from models.payment import SubscriptionId
-from services.admin import change_cost_subscription, subscriptions_cost
+from models.payment import SubscriptionId, UserSubscription
+from services.admin import change_cost_subscription, subscriptions_cost, users_subscriptions
 from services.jwt_check import JWTBearer
 
 from typing import List
@@ -36,3 +36,12 @@ async def get_subscriptions_cost(
         user_id: str = Depends(JWTBearer()),
 ) -> List[SubscriptionCost]:
     return await subscriptions_cost(cost_date=cost_date)
+
+
+@router.get('/users/', description='List of users subscriptions',
+            response_model=List[UserSubscription],
+            response_description='List of users subscriptions')
+async def get_users_subscriptions(
+        user_id: str = Depends(JWTBearer()),
+) -> List[UserSubscription]:
+    return await users_subscriptions()

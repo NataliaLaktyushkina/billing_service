@@ -123,7 +123,7 @@ async def update_statuses(
         await session.commit()
 
 
-async def list_user_payments(user_id: str) -> List[Payments]:
+async def list_user_payments(user_id: List[str]) -> List[Payments]:
     """Check if subscription exists"""
     current_date = datetime.datetime.now()
     async with SessionLocal() as session:
