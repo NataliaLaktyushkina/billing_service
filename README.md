@@ -41,7 +41,7 @@
 
 *http://127.0.0.1:8101/api/openapi*
 
-API - позволяет оплатить подписку либо вернуть стоимость.
+API - позволяет оплатить подписку, посмотреть список своих подписок.
 
 Если у пользователя уже есть подписка, то запрос на платеж не отправляется.
 
@@ -59,17 +59,25 @@ API - позволяет оплатить подписку либо вернут
 Отправляет в процессинг (stripe) последний запрос на платеж от пользователя (processing_status = new).
 Данные платеж в БД переходит в processing_status = in_processing.
 
-Полсе ответа от stripe:
-Платеж в БД переход в processing_status = processed.
+После ответа от stripe:
+Платеж в БД переход в processing_status = completed.
 Задублированные запросы от пользователя переходят в  processing_status = duplicated.
 Платеж считается дублем, если:
  - от пользователя уже есть запрос на подписку
  - платеж в processing_status = new
 
-Send notification from stripe:
+Из stripe отправляем пользователю чек об оплате:
 
 https://dashboard.stripe.com/test/payments
 
+**Notification service:**
+
+Если подписка успешно оплачена (processing_status=completed & payment_status=accepted) отправляем еще одно письмо пользователю.
+
+*http://127.0.0.1:81/adminapi/v1/create_mailing*
+Письмо пользователю "Спасибо, что оплатили подписку" с подборкой фильмов.
+
+----
 **Kafka:**
 
 List of topics inside a container:

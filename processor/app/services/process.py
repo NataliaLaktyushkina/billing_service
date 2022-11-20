@@ -45,6 +45,7 @@ async def send_to_processing(payments: List[PaymentsShort]):
             new_processing_status = ProcessingStatus.completed
             if response.status == 'succeeded':
                 payment_status = PaymentStatus.accepted
+                #  Here need to send notification letter to user via Notification service
             else:
                 payment_status = PaymentStatus.error
             await update_statuses(
