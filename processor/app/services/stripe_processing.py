@@ -22,6 +22,7 @@ def generate_card() -> PaymentMethod:
 def generate_payment_intent(
         amount: int,
         payment_method: PaymentMethod) -> PaymentIntent:
+
     payment_intent = stripe.PaymentIntent.create(
         amount=amount,
         currency='rub',
@@ -30,6 +31,7 @@ def generate_payment_intent(
         description='payment for movie subscription',
         receipt_email='education_tests@mail.ru',
     )
+
     return payment_intent
 
 

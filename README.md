@@ -60,7 +60,7 @@ API - позволяет оплатить подписку, посмотреть
 Данные платеж в БД переходит в processing_status = in_processing.
 
 После ответа от stripe:
-Платеж в БД переход в processing_status = completed.
+Платеж в БД переходит в processing_status = completed.
 Задублированные запросы от пользователя переходят в  processing_status = duplicated.
 Платеж считается дублем, если:
  - от пользователя уже есть запрос на подписку
@@ -69,6 +69,9 @@ API - позволяет оплатить подписку, посмотреть
 Из stripe отправляем пользователю чек об оплате:
 
 https://dashboard.stripe.com/test/payments
+
+Почту пользователя получаем из Auth service:
+*AUTH_SERVICE/v1/user_by_id*
 
 **Notification service:**
 
