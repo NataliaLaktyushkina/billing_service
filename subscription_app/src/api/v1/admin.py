@@ -45,3 +45,19 @@ async def get_users_subscriptions(
         user_id: str = Depends(JWTBearer()),
 ) -> List[UserSubscription]:
     return await users_subscriptions()
+
+
+# @router.post('/', description='Refund subscription',
+#              response_model=RefundAccepted,
+#              response_description='Subscription was successfully refunded')
+# async def refund_subscription(
+#         name: SubscriptionId,
+#         new_cost: int,
+#         starting_date: date = Query(default=date.today()),
+#         user_id: str = Depends(JWTBearer()),
+# ) -> RefundAccepted:
+#     return await change_cost_subscription(
+#         name=name,
+#         new_cost=new_cost,
+#         starting_date=starting_date,
+#     )
