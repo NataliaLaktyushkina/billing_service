@@ -43,7 +43,7 @@ async def send_to_processing(payments: List[PaymentsShort]):
             response = process_payment(amount=payment_cost*100)
             logger.info(' '.join((response.stripe_id, response.status)))
             new_processing_status = ProcessingStatus.completed
-            if response.status == 'succeeded':
+            if response.status == 'active':
                 payment_status = PaymentStatus.accepted
                 #  Here need to send notification letter to user via Notification service
             else:
