@@ -13,5 +13,6 @@ class SubscriptionId(str, Enum):
 
 class PaymentsShort(BaseOrjsonModel):
     id: uuid.UUID
+    user_id: uuid.UUID
     subscription_type: SubscriptionId
     payment_date: datetime.datetime

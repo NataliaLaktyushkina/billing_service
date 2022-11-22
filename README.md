@@ -4,6 +4,8 @@
 
 ![Схема](scheme/billing_scheme.drawio.png)
 
+[Auth service](https://github.com/NataliaLaktyushkina/Auth_sprint_2)
+
 ## Запуск проекта
 `docker compose up`
 
@@ -41,7 +43,15 @@
 
 *http://127.0.0.1:8101/api/openapi*
 
-API - позволяет оплатить подписку либо вернуть стоимость.
+API - позволяет пользователям:
+- оплатить подписку,
+- посмотреть список своих подписок.
+
+Администратору:
+- Посмотреть список пользователей и их подписок
+- Изменить стоимость подписки в БД и в процессинге (stripe)
+- Отменить подписку пользователя - на текущий момент этим занимаются адинистраторы,
+так как нет четких критeриев от бизнеса, в каком случае пользователь может отменить подписку.
 
 Если у пользователя уже есть подписка, то запрос на платеж не отправляется.
 
@@ -59,17 +69,30 @@ API - позволяет оплатить подписку либо вернут
 Отправляет в процессинг (stripe) последний запрос на платеж от пользователя (processing_status = new).
 Данные платеж в БД переходит в processing_status = in_processing.
 
-Полсе ответа от stripe:
-Платеж в БД переход в processing_status = processed.
+После ответа от stripe:
+Платеж в БД переходит в processing_status = completed.
 Задублированные запросы от пользователя переходят в  processing_status = duplicated.
 Платеж считается дублем, если:
  - от пользователя уже есть запрос на подписку
  - платеж в processing_status = new
 
-Send notification from stripe:
+Из stripe отправляем пользователю чек об оплате:
 
 https://dashboard.stripe.com/test/payments
 
+Почту пользователя получаем из Auth service:
+
+*AUTH_SERVICE/v1/user_by_id*
+
+**Notification service:** (не реализован)
+
+Если подписка успешно оплачена (processing_status=completed & payment_status=accepted) отправляем еще одно письмо пользователю.
+
+*NOTIFICATION_SERVICE/adminapi/v1/create_mailing*
+
+Письмо пользователю "Спасибо, что оплатили подписку" с подборкой фильмов.
+
+----
 **Kafka:**
 
 List of topics inside a container:

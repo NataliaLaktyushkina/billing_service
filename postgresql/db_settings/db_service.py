@@ -1,43 +1,14 @@
 import datetime
-import secrets
-import string
 import uuid
-from typing import List, Optional
+from typing import List
 
 from sqlalchemy import func, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.future import select
-from werkzeug.security import generate_password_hash
 
 from postgresql.db_settings.db import SessionLocal
-from postgresql.db_settings.db_models import User, Payments, ProcessingStatus, PaymentStatus
+from postgresql.db_settings.db_models import Payments, ProcessingStatus, PaymentStatus
 from postgresql.db_settings.logger import logger
-
-
-def get_user_by_login(login: str) -> User:
-    user = User.query.filter_by(login=login).first()
-    return user
-
-
-def generate_password():
-    alphabet = string.ascii_letters + string.digits
-    password = ''.join(secrets.choice(alphabet) for i in range(8))
-
-    return password
-
-
-def create_user(username, email, password: Optional[str] = None):
-    if password is None:
-        password = generate_password()
-    hashed_password = generate_password_hash(password, method='sha256')
-    new_user = User(login=username,
-                    password=hashed_password,
-                    email=email)
-    service = SessionLocal()
-    service.add(new_user)
-    service.commit()
-
-    return new_user
 
 
 async def add_payment(payment_data: List[dict]):
@@ -79,7 +50,7 @@ async def upload_payments(processing_status: ProcessingStatus) -> List[uuid.uuid
         ).group_by(Payments.user_id).subquery()
 
         result = await session.execute(
-            select(Payments.id, Payments.subscription_type, Payments.payment_date).join(
+            select(Payments.id, Payments.user_id, Payments.subscription_type, Payments.payment_date).join(
                 subq, (Payments.payment_date == subq.c.payments_date) &  # noqa: W504
                       (Payments.user_id == subq.c.user_id),
             ),
@@ -110,6 +81,7 @@ async def mark_duplicates(original_payments=List[uuid.uuid4]):
 async def update_statuses(
         payment_id: List[uuid.uuid4], processing_status: ProcessingStatus,
         payment_status: PaymentStatus = PaymentStatus.unknown,
+        subscription_id: str = '',
 ) -> None:
     async with SessionLocal() as session:
         await session.execute(
@@ -118,7 +90,8 @@ async def update_statuses(
             ).where(
                 Payments.id.in_(payment_id),
             ).values(processing_status=processing_status,
-                     payment_status=payment_status),
+                     payment_status=payment_status,
+                     subscription_id=subscription_id),
         )
         await session.commit()
 
