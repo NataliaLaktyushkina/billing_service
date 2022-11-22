@@ -13,6 +13,8 @@ RUN pip install --upgrade pip \
 
 COPY /subscription_app/src /app
 COPY /postgresql/db_settings /app/postgresql/db_settings
+COPY /stripe_app /app/stripe_app
+COPY /common /app/common
 
 # create entrypoint for Kafka and ClickHouse waiting
 COPY /docker/subscription_app/entrypoint.sh .

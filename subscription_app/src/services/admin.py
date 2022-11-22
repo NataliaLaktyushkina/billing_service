@@ -4,6 +4,7 @@ from typing import Union, List
 from fastapi.responses import JSONResponse
 from stripe.error import InvalidRequestError
 
+from common.main import get_subscription_intervals
 from models.admin import CostUpdated, SubscriptionCost
 from models.payment import UserSubscription, SubscriptionId
 from postgresql.db_settings.db_service import list_user_payments
@@ -33,19 +34,6 @@ async def change_cost_subscription(
         return CostUpdated(updated=cost_updated)
     except InvalidRequestError as e:
         return JSONResponse(content=e.user_message)
-
-
-def get_subscription_intervals(subscription_name: str) -> tuple:
-    if subscription_name=='month':
-        interval = 'month'
-        interval_count = 1
-    elif subscription_name == 'three_months':
-        interval = 'month'
-        interval_count = 3
-    elif subscription_name == 'year':
-        interval = 'year'
-        interval_count = 1
-    return interval, interval_count
 
 
 async def subscriptions_cost(cost_date: datetime.date) -> List[SubscriptionCost]:

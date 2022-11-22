@@ -2,7 +2,7 @@ import stripe
 from stripe import Customer, Product, Price, Subscription
 from stripe import SetupIntent
 
-from processor.app.core.config import settings
+from stripe_app.app.core.config import settings
 
 stripe.api_key = settings.STRIPE_API_KEY
 
@@ -125,7 +125,7 @@ def process_payment(
         customer = create_customer(user_id=user_id, email=email)
     setup_intent = create_setup_intent(customer=customer)
     subscription = create_subscription(
-        customer=customer, price=price,
+        customer=customer, price=price[0],
         setup_intent=setup_intent,
     )
 

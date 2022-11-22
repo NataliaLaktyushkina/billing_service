@@ -79,7 +79,7 @@ async def upload_payments(processing_status: ProcessingStatus) -> List[uuid.uuid
         ).group_by(Payments.user_id).subquery()
 
         result = await session.execute(
-            select(Payments.id, Payments.subscription_type, Payments.payment_date).join(
+            select(Payments.id, Payments.user_id, Payments.subscription_type, Payments.payment_date).join(
                 subq, (Payments.payment_date == subq.c.payments_date) &  # noqa: W504
                       (Payments.user_id == subq.c.user_id),
             ),
