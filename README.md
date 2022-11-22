@@ -4,6 +4,8 @@
 
 ![Схема](scheme/billing_scheme.drawio.png)
 
+[Auth service](https://github.com/NataliaLaktyushkina/Auth_sprint_2)
+
 ## Запуск проекта
 `docker compose up`
 

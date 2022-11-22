@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   nginx:
-    container_name: nginx
+    container_name: nginx_billing
     build:
       context: ./nginx
     ports:

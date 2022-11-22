@@ -3,6 +3,7 @@ from typing import List
 from core.logger import logger
 
 from common.main import get_subscription_intervals
+from common.auth_data import get_data_from_auth
 from models.payment import PaymentsShort
 from postgresql.db_settings.db_models import ProcessingStatus, PaymentStatus
 from postgresql.db_settings.db_service import update_statuses
@@ -21,8 +22,9 @@ async def process_payments(payments: List[PaymentsShort]):
 async def send_to_processing(payments: List[PaymentsShort]):
     for payment in payments:
         interval, interval_count = get_subscription_intervals(payment.subscription_type)
+        user_data = get_data_from_auth(user_id=payment.user_id)
         response = process_payment(
-            user_id=payment.user_id, email='123@mail.ru',
+            user_id=payment.user_id, email=user_data['email'],
             interval=interval, interval_count=interval_count,
         )
         logger.info(' '.join((response.stripe_id, response.status)))

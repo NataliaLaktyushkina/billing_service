@@ -73,7 +73,6 @@ def update_or_create_price(
     return price
 
 
-
 def create_customer(user_id: str, email: str) -> Customer:
     new_customer = stripe.Customer.create(
         name=user_id,
