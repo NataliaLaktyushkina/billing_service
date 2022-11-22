@@ -29,6 +29,7 @@ async def change_subscription_cost(
         return True
     except IntegrityError:
         logger.error(msg='Check date and subscription type')
+        return False
 
 
 async def get_subscriptions_cost(
