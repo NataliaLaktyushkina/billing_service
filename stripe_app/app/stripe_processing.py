@@ -109,6 +109,12 @@ def create_subscription(
     return new_subscription
 
 
+def delete_subscription(subscription_id: str) -> Subscription:
+    # Cancel the subscription by deleting it
+    deleted_subscription = stripe.Subscription.delete(subscription_id)
+    return deleted_subscription
+
+
 def process_payment(
         user_id: str, email: str,
         interval: str, interval_count: int,

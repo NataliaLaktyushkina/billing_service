@@ -3,10 +3,10 @@ from typing import List
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.future import select
-from sqlalchemy import func
+from sqlalchemy import func, update
 
 from postgresql.db_settings.db import SessionLocal
-from postgresql.db_settings.db_models import SubscriptionCost, SubscriptionTypes, User
+from postgresql.db_settings.db_models import Payments, SubscriptionCost, SubscriptionTypes, User
 from postgresql.db_settings.logger import logger
 
 
@@ -61,3 +61,23 @@ async def get_users_list() -> List[str]:
             select(User.id),
         )
         return result.scalars().all()
+
+
+async def stop_subscription(
+        subscription_id: List[str],
+) -> bool:
+    today = datetime.date.today()
+    async with SessionLocal() as session:
+        await session.execute(
+            update(
+                Payments,
+            ).where(
+                Payments.subscription_id.in_(subscription_id),
+            ).values(expiration_date=today),
+        )
+        try:
+            await session.commit()
+            return True
+        except IntegrityError:
+            logger.error(msg='Check date and subscription type')
+            return False

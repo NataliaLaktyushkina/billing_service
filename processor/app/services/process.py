@@ -38,4 +38,5 @@ async def send_to_processing(payments: List[PaymentsShort]):
             payment_id=[payment.id],
             processing_status=new_processing_status,
             payment_status=payment_status,
+            subscription_id=response.id,
         )

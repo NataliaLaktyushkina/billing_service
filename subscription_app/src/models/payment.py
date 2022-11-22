@@ -29,7 +29,6 @@ class UserSubscription(BaseOrjsonModel):
 
 class PaymentType(str, Enum):
     payment = 'payment'
-    cancellation = 'cancellation'
 
 
 class Payment(BaseOrjsonModel):
