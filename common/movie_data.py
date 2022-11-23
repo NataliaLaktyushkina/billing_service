@@ -12,19 +12,17 @@ _log_handler = logging.StreamHandler()
 _log_handler.setLevel(logging.DEBUG)
 
 
-logger = logging.getLogger('auth_data')
+logger = logging.getLogger('movie_data')
 logger.addHandler(_log_handler)
 logger.setLevel(logging.DEBUG)
 
 
-def get_data_from_auth(user_id: str) -> Any:
-    params = {'user_id': user_id}
+def check_movie_subscription(film_id: str) -> Any:
     response = requests.get(
-        f'{settings.AUTH_SERVICE}/v1/user_by_id',
-        params=params,
+        f'{settings.MOVIE_SERVICE}/api/v1/films/{film_id}/by_subscription',
     )
     logger.info(response.content)
     if not response.ok:
         return {}
     json_data = json.loads(response.content)
-    return json_data['user']
+    return json_data['by_subscription']

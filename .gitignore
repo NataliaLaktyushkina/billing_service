@@ -6,3 +6,4 @@ flake-report
 .mypy_cache
 .github
 __pycache__
+/processing/

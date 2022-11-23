@@ -37,6 +37,7 @@ async def subscriptions_list(
 ) -> List[UserSubscription]:
     return await service.subscriptions_list(user_id=user_id)
 
+
 @router.get('/films/', description='Check if user can watch film',
             response_model=FilmAvailable,
             response_description='User can watch or not film')
