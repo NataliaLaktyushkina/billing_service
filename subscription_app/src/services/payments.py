@@ -5,8 +5,10 @@ from fastapi.responses import JSONResponse
 
 from db.kafka import get_kafka
 from models.payment import PaymentAccepted, Payment, UserSubscription, SubscriptionId
+from models.payment import FilmAvailable
 from services.service import AbstractPaymentStorage, KafkaStorage
 from postgresql.db_settings.db_service import list_user_payments
+from common.movie_data import check_movie_subscription
 
 
 class PaymentHandler:
@@ -35,6 +37,19 @@ class PaymentHandler:
             )
             subscription_list.append(subscription)
         return subscription_list
+
+    async def check_availability(
+            self, user_id: str,
+            film_id: str,
+    ) -> FilmAvailable:
+        # check subscription
+        user_subscriptions = await self.subscriptions_list(user_id)
+        # check if film by subscription in movie service
+        film_by_subscription = check_movie_subscription(film_id=film_id)
+        available = True
+        if film_by_subscription and len(user_subscriptions) == 0:
+            available = False
+        return FilmAvailable(available=available)
 
 
 def get_payment_handler(

@@ -2,9 +2,10 @@
 
 [Репозиторий c дипломной работой](https://github.com/NataliaLaktyushkina/graduate_work)
 
-![Схема](scheme/billing_scheme.drawio.png)
+![Схема](scheme/billing_scheme.png)
 
 [Auth service](https://github.com/NataliaLaktyushkina/Auth_sprint_2)
+[Movie_service](https://github.com/NataliaLaktyushkina/Sprint_4_Async_API)
 
 ## Запуск проекта
 `docker compose up`
@@ -41,11 +42,16 @@
 
 **Subscription app**:
 
-*http://127.0.0.1:8101/api/openapi*
+*http://127.0.0.1:80/api/openapi*
 
 API - позволяет пользователям:
 - оплатить подписку,
 - посмотреть список своих подписок.
+- проверить доступность фильма к просмотру:
+  - фильмы с рейтингом выше 7 доступны только по подписке
+
+MOVIE_SERVICE: http://127.0.0.1:90/api/openapi
+
 
 Администратору:
 - Посмотреть список пользователей и их подписок

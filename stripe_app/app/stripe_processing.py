@@ -1,3 +1,5 @@
+from typing import Union
+
 import stripe
 from stripe import Customer, Product, Price, Subscription
 from stripe import SetupIntent
@@ -23,7 +25,7 @@ def search_price(
         product: Product,
         interval: str,
         interval_count: int,
-) -> Price:
+) -> Union[Price, None]:
     price = stripe.Price.search(
         query=f"product:'{product.id}' "
               f" AND active:'true'"
@@ -32,6 +34,18 @@ def search_price(
     )
     if price.data:
         return price.data
+    return None
+
+
+def search_subscription(
+        user_id: str,
+) -> Union[Subscription, None]:
+    subscription = stripe.Subscription.search(
+        query=f"status:'active' "
+              f" AND metadata['customer']:{user_id}",
+    )
+    if subscription.data:
+        return subscription.data
     return None
 
 
@@ -52,7 +66,7 @@ def create_price(
     return new_price
 
 
-def update_price(price: Price, new_cost: int) -> Price:
+def update_price(price: Price) -> Price:
     new_price = stripe.Price.modify(
       price.id,
       active=False,
@@ -104,6 +118,7 @@ def create_subscription(
         description='Movie subscription',
         collection_method='charge_automatically',
         expand=['latest_invoice.payment_intent'],
+        metadata={'customer': customer.id},
         default_payment_method=setup_intent.payment_method,
     )
     return new_subscription
