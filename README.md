@@ -5,6 +5,7 @@
 ![Схема](scheme/billing_scheme.png)
 
 [Auth service](https://github.com/NataliaLaktyushkina/Auth_sprint_2)
+
 [Movie_service](https://github.com/NataliaLaktyushkina/Sprint_4_Async_API)
 
 ## Запуск проекта
