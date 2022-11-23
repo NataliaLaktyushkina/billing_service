@@ -3,7 +3,6 @@ import uuid
 from enum import Enum
 
 from core.config import settings
-
 from .json_config import BaseOrjsonModel
 
 
@@ -46,3 +45,7 @@ class PaymentAccepted(BaseOrjsonModel):
       This is the description of payment model .
     """
     accepted: bool
+
+
+class FilmAvailable(BaseOrjsonModel):
+    available: bool
