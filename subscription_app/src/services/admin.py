@@ -43,6 +43,7 @@ async def users_subscriptions() -> List[UserSubscription]:
     subscriptions = await list_user_payments(user_id=users)
     return [UserSubscription(
         user_id=subscription.user_id,
+        subscription_id = subscription.subscription_id,
         id=subscription.id,
         subscription_type=SubscriptionId[subscription.subscription_type],
         expiration_date=subscription.expiration_date,
