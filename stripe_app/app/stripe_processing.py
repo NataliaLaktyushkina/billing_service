@@ -66,7 +66,7 @@ def create_price(
     return new_price
 
 
-def update_price(price: Price) -> Price:
+def deactivate_price(price: Price) -> Price:
     new_price = stripe.Price.modify(
       price.id,
       active=False,
@@ -81,8 +81,9 @@ def update_or_create_price(
 
     product = search_product()
     current_prices = search_price(product, interval, interval_count)
-    for current_price in current_prices:
-        update_price(current_price, new_price)
+    if current_prices:
+        for current_price in current_prices:
+            deactivate_price(current_price)
     price = create_price(new_price, interval, interval_count)
     return price
 
