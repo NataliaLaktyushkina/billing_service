@@ -4,6 +4,14 @@
 
 ![Схема](scheme/billing_scheme.png)
 
+**Description:**
+
+Пользователь через Subscription API отправляет запрос (payment) на оплату подписки.
+Payment добавляется в очередь (Kafka), откуда считывается Saver app.
+Saver app все payments кладет в БД (PostgreSQL). Статус платежа = new.
+Из БД  Processor вычитывает платежи в статусе new и отправляет их в Processing (Stripe).
+Processing производит списание денег и отправляет чек пользователю.
+
 [Auth service](https://github.com/NataliaLaktyushkina/Auth_sprint_2)
 
 [Movie_service](https://github.com/NataliaLaktyushkina/Sprint_4_Async_API)
