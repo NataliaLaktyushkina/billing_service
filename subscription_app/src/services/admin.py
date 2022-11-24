@@ -1,7 +1,6 @@
 import datetime
 from typing import Union, List
 
-import transaction
 from fastapi.responses import JSONResponse
 
 from common.main import get_subscription_intervals
@@ -22,16 +21,15 @@ async def change_cost_subscription(
         starting_date: datetime.date,
 ) -> Union[CostUpdated, JSONResponse]:
     interval, interval_count = get_subscription_intervals(name)
-    with transaction.manager:
-        resp = update_or_create_price(new_cost, interval, interval_count)
-        if resp.active:
-            cost_updated = await change_subscription_cost(
-                subscription_type=name,
-                cost=new_cost,
-                starting_date=starting_date,
-            )
+    resp = update_or_create_price(new_cost, interval, interval_count)
+    if resp.active:
+        cost_updated = await change_subscription_cost(
+            subscription_type=name,
+            cost=new_cost,
+            starting_date=starting_date,
+        )
 
-        return CostUpdated(updated=cost_updated)
+    return CostUpdated(updated=cost_updated)
 
 
 async def subscriptions_cost(cost_date: datetime.date) -> List[SubscriptionCost]:
