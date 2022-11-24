@@ -1,8 +1,8 @@
 import datetime
 from typing import Union, List
 
+import transaction
 from fastapi.responses import JSONResponse
-from stripe.error import InvalidRequestError
 
 from common.main import get_subscription_intervals
 from models.admin import CostUpdated, SubscriptionCost, SubscriptionDeleted
@@ -21,21 +21,17 @@ async def change_cost_subscription(
         new_cost: int,
         starting_date: datetime.date,
 ) -> Union[CostUpdated, JSONResponse]:
-
     interval, interval_count = get_subscription_intervals(name)
-
-    try:
-        cost_updated = await change_subscription_cost(
-            subscription_type=name,
-            cost=new_cost,
-            starting_date=starting_date,
-        )
-        if cost_updated:
-            update_or_create_price(new_cost, interval, interval_count)
+    with transaction.manager:
+        resp = update_or_create_price(new_cost, interval, interval_count)
+        if resp.active:
+            cost_updated = await change_subscription_cost(
+                subscription_type=name,
+                cost=new_cost,
+                starting_date=starting_date,
+            )
 
         return CostUpdated(updated=cost_updated)
-    except InvalidRequestError as e:
-        return JSONResponse(content=e.user_message)
 
 
 async def subscriptions_cost(cost_date: datetime.date) -> List[SubscriptionCost]:
@@ -48,11 +44,11 @@ async def users_subscriptions() -> List[UserSubscription]:
     users = await get_users_list()
     subscriptions = await list_user_payments(user_id=users)
     return [UserSubscription(
-                user_id=subscription.user_id,
-                id=subscription.id,
-                subscription_type=SubscriptionId[subscription.subscription_type],
-                expiration_date=subscription.expiration_date,
-            ) for subscription in subscriptions]
+        user_id=subscription.user_id,
+        id=subscription.id,
+        subscription_type=SubscriptionId[subscription.subscription_type],
+        expiration_date=subscription.expiration_date,
+    ) for subscription in subscriptions]
 
 
 async def cancel_subscription(subscription_id: str) -> SubscriptionDeleted:

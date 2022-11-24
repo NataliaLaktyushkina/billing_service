@@ -1,11 +1,12 @@
 """Модуль содержит вспомогательный функции для работы с базой данных."""
 import logging
 
-from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 from postgresql.db_settings.config_saver import settings
+
 
 db_settings = settings.postgres_settings
 
@@ -24,5 +25,4 @@ logger = logging.getLogger(__name__)
 
 engine = create_async_engine(SQLALCHEMY_DATABASE_URI)
 SessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
-
 Base = declarative_base()
