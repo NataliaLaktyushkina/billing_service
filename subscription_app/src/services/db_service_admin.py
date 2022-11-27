@@ -6,7 +6,7 @@ from sqlalchemy.future import select
 from sqlalchemy import func, update
 
 from postgresql.db_settings.db import SessionLocal
-from postgresql.db_settings.db_models import Payment, SubscriptionCost, SubscriptionType, User
+from postgresql.models.db_models import Payment, SubscriptionCost, SubscriptionType, User
 from postgresql.db_settings.logger import logger
 
 

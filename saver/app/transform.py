@@ -1,12 +1,13 @@
-import uuid
 import ast
+import uuid
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
 from typing import List
 
-from postgresql.db_settings.db_service import add_payment
-from postgresql.db_settings.db_service import list_user_payments
-from postgresql.db_settings.db_models import SubscriptionType, PaymentType
+from dateutil.relativedelta import relativedelta
+
+from postgresql.models.db_models import SubscriptionType, PaymentType
+from services.db_service import add_payment
+from services.db_service import list_user_payments
 
 
 async def transform_data(kafka_data: List[dict]):

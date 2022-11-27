@@ -1,12 +1,12 @@
 from typing import List
 
 from core.logger import logger
+from services.auth_data import get_data_from_auth
 
 from common.subscriptions import get_subscription_intervals
-from services.auth_data import get_data_from_auth
 from models.payment import PaymentsShort
-from postgresql.db_settings.db_models import ProcessingStatus, PaymentStatus
-from postgresql.db_settings.db_service import update_statuses
+from postgresql.models.db_models import ProcessingStatus, PaymentStatus
+from services.db_service import update_statuses
 from stripe_app.app.stripe_processing import process_payment
 
 

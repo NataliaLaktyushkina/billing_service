@@ -13,6 +13,7 @@ RUN pip install --upgrade pip \
 
 COPY /processor/app /app
 COPY /postgresql/db_settings /app/postgresql/db_settings
+COPY /postgresql/models /app/postgresql/models
 COPY /stripe_app /app/stripe_app
 COPY /common /app/common
 

@@ -13,6 +13,7 @@ RUN pip install --upgrade pip \
 
 COPY /saver/app /app
 COPY /postgresql/db_settings /app/postgresql/db_settings
+COPY /postgresql/models /app/postgresql/models
 
 # create entrypoint for Kafka and ClickHouse waiting
 COPY /docker/saver/entrypoint.sh .
