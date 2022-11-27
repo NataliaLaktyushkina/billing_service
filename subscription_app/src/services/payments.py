@@ -18,9 +18,6 @@ class PaymentHandler:
     async def send_payment(
             self, payment: Payment, user_id: str,
     ) -> Union[PaymentAccepted, JSONResponse]:
-        subscription_exist = await self.subscriptions_list(user_id)
-        if len(subscription_exist):
-            return JSONResponse(content='Subscription is already paid')
         payment_accepted = await self.payment_storage.send_payment(payment, user_id)
         return PaymentAccepted(accepted=payment_accepted)
 
