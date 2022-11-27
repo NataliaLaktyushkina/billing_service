@@ -3,7 +3,7 @@ from typing import Union, List
 
 from fastapi.responses import JSONResponse
 
-from common.main import get_subscription_intervals
+from common.subscriptions import get_subscription_intervals
 from models.admin import CostUpdated, SubscriptionCost, SubscriptionDeleted
 from models.payment import UserSubscription, SubscriptionType
 from postgresql.db_settings.db_service import list_user_payments

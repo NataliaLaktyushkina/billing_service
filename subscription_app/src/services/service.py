@@ -31,7 +31,7 @@ class KafkaStorage(AbstractPaymentStorage):
             msg = json.dumps(dict(payment), default=str)
             await self.producer.send_and_wait(topic=payment.topic,
                                               value=msg.encode() ,
-                                              key=':'.join((user_id, payment.payment_id)).encode())
+                                              key=':'.join((user_id, payment.subscription_type)).encode())
 
             payment_was_sent = True
         except KafkaError:

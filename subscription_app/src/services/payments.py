@@ -8,7 +8,7 @@ from models.payment import PaymentAccepted, Payment, UserSubscription, Subscript
 from models.payment import FilmAvailable
 from services.service import AbstractPaymentStorage, KafkaStorage
 from postgresql.db_settings.db_service import list_user_payments
-from common.movie_data import check_movie_subscription
+from services.movie_data import check_movie_subscription
 
 
 class PaymentHandler:

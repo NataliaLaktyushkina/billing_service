@@ -13,7 +13,6 @@ if not IS_DOCKER:
 class Settings(BaseSettings):
 
     AUTH_SERVICE: Optional[str]
-    MOVIE_SERVICE: Optional[str]
 
     class Config:
         env_file = '.env'
