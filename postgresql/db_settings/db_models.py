@@ -50,12 +50,12 @@ class PaymentStatus(enum.Enum):
     unknown = 'unknown'
 
 
-class PaymentsTypes(enum.Enum):
+class PaymentType(enum.Enum):
     payment = 'payment'
     refund = 'refund'
 
 
-class SubscriptionTypes(str, enum.Enum):
+class SubscriptionType(str, enum.Enum):
     month = 'month'
     three_months = 'three_months'
     year = 'year'
@@ -69,12 +69,12 @@ class SubscriptionCost(Base):
     )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
-    subscription_type = Column(Enum(SubscriptionTypes), nullable=False)
+    subscription_type = Column(Enum(SubscriptionType), nullable=False)
     cost = Column(Integer, nullable=False)
     creation_date = Column(DateTime, default=datetime.utcnow(), nullable=False)
 
 
-class Payments(Base):
+class Payment(Base):
     """Model to represent payments to process"""
     __tablename__ = 'payments'
 
@@ -82,11 +82,11 @@ class Payments(Base):
                 default=uuid.uuid4, unique=True, nullable=False)
     user_id = Column(UUID(as_uuid=True), ForeignKey(User.id))
     subscription_id = Column(String)
-    subscription_type = Column(Enum(SubscriptionTypes), nullable=False)
+    subscription_type = Column(Enum(SubscriptionType), nullable=False)
     processing_status = Column(Enum(ProcessingStatus))
     payment_status = Column(Enum(PaymentStatus))
     payment_date = Column(DateTime, default=datetime.utcnow(), nullable=False)
-    payment_type = Column(Enum(PaymentsTypes), nullable=False)
+    payment_type = Column(Enum(PaymentType), nullable=False)
     expiration_date = Column(DateTime, nullable=False)
 
     def __repr__(self):

@@ -6,7 +6,7 @@ from typing import List
 
 from postgresql.db_settings.db_service import add_payment
 from postgresql.db_settings.db_service import list_user_payments
-from postgresql.db_settings.db_models import SubscriptionTypes, PaymentsTypes
+from postgresql.db_settings.db_models import SubscriptionType, PaymentType
 
 
 async def transform_data(kafka_data: List[dict]):
@@ -21,10 +21,10 @@ async def transform_data(kafka_data: List[dict]):
         payments = await list_user_payments(user_id=[user_id])
         if not payments:
             data['user_id'] = uuid.UUID(user_id)
-            data['subscription_type'] = SubscriptionTypes[subscription_type]
+            data['subscription_type'] = SubscriptionType[subscription_type]
             value = msg['value'].decode('utf-8')
             value_dict = ast.literal_eval(value)
-            data['payment_type'] = PaymentsTypes[value_dict['payment_type']]
+            data['payment_type'] = PaymentType[value_dict['payment_type']]
             payment_date = msg['timestamp'] / 1000
             data['payment_date'] = datetime.fromtimestamp(payment_date)
             if subscription_type == 'month':

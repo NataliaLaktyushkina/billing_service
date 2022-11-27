@@ -28,7 +28,7 @@ class PaymentHandler:
         for payment in payments:
             subscription = UserSubscription(
                 id=payment.id,
-                user_id=payment.user_id,
+                subscription_id=payment.subscription_id,
                 subscription_type=SubscriptionId[payment.subscription_type],
                 expiration_date=payment.expiration_date,
             )
