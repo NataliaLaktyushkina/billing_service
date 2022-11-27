@@ -1,14 +1,13 @@
 from datetime import date
+from typing import List
 
 from fastapi import APIRouter, Depends, Query
 
 from models.admin import CostUpdated, SubscriptionCost, SubscriptionDeleted
-from models.payment import SubscriptionId, UserSubscription
-from services.admin import change_cost_subscription, subscriptions_cost, users_subscriptions
+from models.payment import SubscriptionType, UserSubscription
 from services.admin import cancel_subscription
+from services.admin import change_cost_subscription, subscriptions_cost, users_subscriptions
 from services.jwt_check import JWTBearer
-
-from typing import List
 
 router = APIRouter()
 
@@ -17,7 +16,7 @@ router = APIRouter()
              response_model=CostUpdated,
              response_description='Cost of subscription was updated')
 async def update_subscription_cost(
-        name: SubscriptionId,
+        name: SubscriptionType,
         new_cost: int,
         starting_date: date = Query(default=date.today()),
         user_id: str = Depends(JWTBearer()),
@@ -49,8 +48,8 @@ async def get_users_subscriptions(
 
 
 @router.delete('/', description='Delete subscription',
-             response_model=SubscriptionDeleted,
-             response_description='Subscription was successfully cancelled')
+               response_model=SubscriptionDeleted,
+               response_description='Subscription was successfully cancelled')
 async def stop_subscription(
         subscription_id: str,
         user_id: str = Depends(JWTBearer()),

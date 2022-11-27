@@ -4,7 +4,7 @@ from fastapi import Depends
 from fastapi.responses import JSONResponse
 
 from db.kafka import get_kafka
-from models.payment import PaymentAccepted, Payment, UserSubscription, SubscriptionId
+from models.payment import PaymentAccepted, Payment, UserSubscription, SubscriptionType
 from models.payment import FilmAvailable
 from services.service import AbstractPaymentStorage, KafkaStorage
 from postgresql.db_settings.db_service import list_user_payments
@@ -29,7 +29,7 @@ class PaymentHandler:
             subscription = UserSubscription(
                 id=payment.id,
                 subscription_id=payment.subscription_id,
-                subscription_type=SubscriptionId[payment.subscription_type],
+                subscription_type=SubscriptionType[payment.subscription_type],
                 expiration_date=payment.expiration_date,
             )
             subscription_list.append(subscription)
