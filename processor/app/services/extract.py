@@ -1,9 +1,9 @@
 from core.logger import logger
 from services.process import process_payments
 
-from postgresql.db_settings.db_models import ProcessingStatus
-from postgresql.db_settings.db_service import mark_duplicates
-from postgresql.db_settings.db_service import upload_payments
+from postgresql.models.db_models import ProcessingStatus
+from services.db_service import mark_duplicates
+from services.db_service import upload_payments
 
 
 async def extract_payments() -> None:

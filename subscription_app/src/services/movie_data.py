@@ -4,8 +4,7 @@ from typing import Any
 
 import requests
 
-from common.core.config import settings
-
+from core.config import settings
 
 # create console handler and set level to debug
 _log_handler = logging.StreamHandler()

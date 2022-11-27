@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-from postgresql.db_settings.config_saver import settings
+from postgresql.db_settings.config import settings
 
 
 db_settings = settings.postgres_settings

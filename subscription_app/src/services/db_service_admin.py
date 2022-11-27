@@ -6,7 +6,7 @@ from sqlalchemy.future import select
 from sqlalchemy import func, update
 
 from postgresql.db_settings.db import SessionLocal
-from postgresql.db_settings.db_models import Payments, SubscriptionCost, SubscriptionTypes, User
+from postgresql.models.db_models import Payment, SubscriptionCost, SubscriptionType, User
 from postgresql.db_settings.logger import logger
 
 
@@ -18,7 +18,7 @@ async def change_subscription_cost(
     service = SessionLocal()
 
     new_cost = SubscriptionCost(
-        subscription_type=SubscriptionTypes[subscription_type],
+        subscription_type=SubscriptionType[subscription_type],
         cost=cost,
         creation_date=starting_date,
     )
@@ -70,9 +70,9 @@ async def stop_subscription(
     async with SessionLocal() as session:
         await session.execute(
             update(
-                Payments,
+                Payment,
             ).where(
-                Payments.subscription_id.in_(subscription_id),
+                Payment.subscription_id.in_(subscription_id),
             ).values(expiration_date=today),
         )
         try:

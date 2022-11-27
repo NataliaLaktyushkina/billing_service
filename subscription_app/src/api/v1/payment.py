@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 
 from core.config import settings
 from models.payment import PaymentAccepted, Payment, UserSubscription
-from models.payment import SubscriptionId, PaymentStatus, PaymentType
+from models.payment import SubscriptionType, PaymentStatus, PaymentType
 from models.payment import FilmAvailable
 from services.jwt_check import JWTBearer
 from services.payments import PaymentHandler, get_payment_handler
@@ -17,11 +17,11 @@ router = APIRouter()
              response_description='Payment sent')
 async def proceed_payment(
         payment_type: PaymentType,
-        subscription_type: SubscriptionId,
+        subscription_type: SubscriptionType,
         user_id: str = Depends(JWTBearer()),
         service: PaymentHandler = Depends(get_payment_handler),
 ) -> PaymentAccepted:
-    payment = Payment(payment_id=subscription_type,
+    payment = Payment(subscription_type=subscription_type,
                       topic=settings.TOPIC_PAYMENT,
                       status=PaymentStatus.new,
                       payment_type=payment_type)
@@ -45,7 +45,7 @@ async def check_film(
         film_id: str,
         user_id: str = Depends(JWTBearer()),
         service: PaymentHandler = Depends(get_payment_handler),
-) -> List[UserSubscription]:
+) -> FilmAvailable:
     return await service.check_availability(
         user_id=user_id,
         film_id=film_id,

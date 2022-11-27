@@ -1,20 +1,10 @@
 import json
-import logging
 from typing import Any
 
 import requests
 
-from common.core.config import settings
-
-
-# create console handler and set level to debug
-_log_handler = logging.StreamHandler()
-_log_handler.setLevel(logging.DEBUG)
-
-
-logger = logging.getLogger('auth_data')
-logger.addHandler(_log_handler)
-logger.setLevel(logging.DEBUG)
+from core.config import settings
+from core.logger import logger
 
 
 def get_data_from_auth(user_id: str) -> Any:

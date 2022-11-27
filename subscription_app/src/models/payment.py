@@ -14,7 +14,7 @@ class PaymentStatus(str, Enum):
     error = 'error'
 
 
-class SubscriptionId(str, Enum):
+class SubscriptionType(str, Enum):
     month = 'month'
     three_months = 'three_months'
     year = 'year'
@@ -23,7 +23,7 @@ class SubscriptionId(str, Enum):
 class UserSubscription(BaseOrjsonModel):
     id: uuid.UUID
     subscription_id: str
-    subscription_type: SubscriptionId
+    subscription_type: SubscriptionType
     expiration_date: datetime.datetime
 
 
@@ -35,7 +35,7 @@ class Payment(BaseOrjsonModel):
     """
       This is the description of payment model .
     """
-    payment_id: SubscriptionId
+    subscription_type: SubscriptionType
     topic = settings.TOPIC_PAYMENT
     status: PaymentStatus
     payment_type: PaymentType

@@ -1,3 +1,4 @@
+import random
 from typing import Union
 
 import stripe
@@ -96,9 +97,17 @@ def create_customer(user_id: str, email: str) -> Customer:
     return new_customer
 
 
+def choose_payment_method() -> str:
+    payment_method = ['pm_card_visa',
+                      'pm_card_chargeCustomerFail']
+    pm = random.choice(payment_method)   # noqa: S311
+    return pm
+
+
 def create_setup_intent(customer: Customer) -> SetupIntent:
+    pm = choose_payment_method()
     customers_setup_intent = stripe.SetupIntent.create(
-        payment_method='pm_card_visa',
+        payment_method=pm,
         confirm=True,
         customer=customer.id,
     )

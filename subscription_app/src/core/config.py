@@ -1,6 +1,8 @@
 import os
-from pydantic import BaseSettings, BaseModel
+from typing import Optional
+
 from dotenv import load_dotenv
+from pydantic import BaseSettings, BaseModel
 
 IS_DOCKER = os.environ.get('AM_I_IN_A_DOCKER_CONTAINER', False)
 
@@ -30,6 +32,8 @@ class Settings(BaseSettings):
     TOPIC_PAYMENT: str
 
     jwt_settings: JWTSettings = JWTSettings()
+
+    MOVIE_SERVICE: Optional[str]
 
     class Config:
         env_file = '.env'
