@@ -87,7 +87,7 @@ class Payments(Base):
     payment_status = Column(Enum(PaymentStatus))
     payment_date = Column(DateTime, default=datetime.utcnow(), nullable=False)
     payment_type = Column(Enum(PaymentsTypes), nullable=False)
-    expiration_date = Column(DateTime, default=datetime.utcnow(), nullable=False)
+    expiration_date = Column(DateTime, nullable=False)
 
     def __repr__(self):
         return f'<Payments {self.user_id}:{self.payment_type}>'
