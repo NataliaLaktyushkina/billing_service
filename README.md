@@ -2,7 +2,7 @@
 
 [Репозиторий c дипломной работой](https://github.com/NataliaLaktyushkina/graduate_work)
 
-![Схема](scheme/billing_scheme.png)
+![Схема](scheme/billing_scheme.jpeg)
 
 **Description:**
 
