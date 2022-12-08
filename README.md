@@ -1,5 +1,7 @@
 # Проектная работа: диплом
 
+Сервис для оплаты пользователем подписки.
+
 [Репозиторий c дипломной работой](https://github.com/NataliaLaktyushkina/graduate_work)
 
 ![Схема](scheme/billing_scheme.jpeg)
